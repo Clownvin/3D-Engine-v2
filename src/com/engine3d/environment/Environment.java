@@ -15,6 +15,9 @@ public final class Environment {
 	private static final Environment SINGLETON = new Environment();
 	
 	private Environment() {
+		/*
+		*	This section wont exist when compiled into libraries.
+		*/
 		LightSource light = new LightSource(new Point3D(0, 0, 30), 25000 / 2);
 		light.setColor(Color.WHITE);
 		LIGHTS.add(light);
