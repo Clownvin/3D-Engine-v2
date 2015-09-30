@@ -73,7 +73,8 @@ public final class Model3D implements FileIOFormatted<Model3D> {
 		byte[] faceBytes = new byte[Face.getBuilder().sizeOf()];
 		Face[] faces = new Face[(size - 8) / Face.getBuilder().sizeOf()];
 		int idx = 8;
-		//TODO make so Face.fromBytes works with raw byte array and start idx (like BinaryOperations)
+		// TODO make so Face.fromBytes works with raw byte array and start idx
+		// (like BinaryOperations)
 		for (int i = 0; i < faces.length; i++) {
 			for (int j = 0; j < faceBytes.length; j++) {
 				faceBytes[j] = bytes[idx++];

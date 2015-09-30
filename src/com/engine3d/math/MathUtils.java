@@ -37,90 +37,16 @@ public final class MathUtils {
 	}
 
 	public static float calculateAngleRelativeToNormal(final Face t, final Point3D sun, final Point3D normal) {
-		return (float) ((Math.acos(dotProduct(normalizeVector(new Point3D(sun.getX() - t.getAveragePoint().getX(), sun.getY() - t.getAveragePoint().getY(), sun.getZ() - t.getAveragePoint().getZ())), normalizeVector(normal)))
-				* 180) / Math.PI);
-		/*
-		 * return (float) ((Math
-				.acos(dotProduct(
-						new Point3D(sun.getX() - t.getAveragePoint().getX(), sun.getY() - t.getAveragePoint().getY(),
-								sun.getZ() - t.getAveragePoint().getZ()),
-						normal)
-						/ (Math.sqrt((normal.getX() + normal.getY() + normal.getZ())
-								* (normal.getX() + normal.getY() + normal.getZ())) * (Math
-										.sqrt(((sun.getX() - t.getAveragePoint().getX())
-												* (sun.getX() - t.getAveragePoint().getX()))
-												+ ((sun.getY() - normal.getY()) * (sun.getY() - normal.getY()))
-												+ ((sun.getZ() - t.getAveragePoint().getZ())
-														* (sun.getZ() - t.getAveragePoint().getZ()))))))
-				* 180) / Math.PI);
-		 */
+		return (float) ((Math.acos(dotProduct(
+				normalizeVector(new Point3D(sun.getX() - t.getAveragePoint().getX(),
+						sun.getY() - t.getAveragePoint().getY(), sun.getZ() - t.getAveragePoint().getZ())),
+				normalizeVector(normal))) * 180) / Math.PI);
 	}
-	
+
 	public static Point3D normalizeVector(Point3D vector) {
-		float magnitude = (float) Math.sqrt(Math.pow(vector.getX(), 2) + Math.pow(vector.getY(), 2) + Math.pow(vector.getZ(), 2));
+		float magnitude = (float) Math
+				.sqrt(Math.pow(vector.getX(), 2) + Math.pow(vector.getY(), 2) + Math.pow(vector.getZ(), 2));
 		return new Point3D(vector.getX() / magnitude, vector.getY() / magnitude, vector.getZ() / magnitude);
-	}
-	
-	public static float calculateAngleRelativeToNormalDebug(final Face t, final Point3D sun, final Point3D normal) {
-		System.out.println("Top: "+dotProduct(
-						new Point3D(sun.getX() - t.getAveragePoint().getX(), sun.getY() - t.getAveragePoint().getY(),
-								sun.getZ() - t.getAveragePoint().getZ()),
-						normal));
-		System.out.println("Bottom: "+(Math.sqrt((normal.getX() + normal.getY() + normal.getZ())
-								* (normal.getX() + normal.getY() + normal.getZ())) * (Math
-										.sqrt(((sun.getX() - t.getAveragePoint().getX())
-												* (sun.getX() - t.getAveragePoint().getX()))
-												+ ((sun.getY() - normal.getY()) * (sun.getY() - normal.getY()))
-												+ ((sun.getZ() - t.getAveragePoint().getZ())
-														* (sun.getZ() - t.getAveragePoint().getZ()))))));
-		System.out.println("Top/Bottom: "+(dotProduct(
-						new Point3D(sun.getX() - t.getAveragePoint().getX(), sun.getY() - t.getAveragePoint().getY(),
-								sun.getZ() - t.getAveragePoint().getZ()),
-						normal)
-						/ (Math.sqrt((normal.getX() + normal.getY() + normal.getZ())
-								* (normal.getX() + normal.getY() + normal.getZ())) * (Math
-										.sqrt(((sun.getX() - t.getAveragePoint().getX())
-												* (sun.getX() - t.getAveragePoint().getX()))
-												+ ((sun.getY() - normal.getY()) * (sun.getY() - normal.getY()))
-												+ ((sun.getZ() - t.getAveragePoint().getZ())
-														* (sun.getZ() - t.getAveragePoint().getZ())))))));
-		System.out.println("Acos: "+Math
-				.acos(dotProduct(
-						new Point3D(sun.getX() - t.getAveragePoint().getX(), sun.getY() - t.getAveragePoint().getY(),
-								sun.getZ() - t.getAveragePoint().getZ()),
-						normal)
-						/ (Math.sqrt((normal.getX() + normal.getY() + normal.getZ())
-								* (normal.getX() + normal.getY() + normal.getZ())) * (Math
-										.sqrt(((sun.getX() - t.getAveragePoint().getX())
-												* (sun.getX() - t.getAveragePoint().getX()))
-												+ ((sun.getY() - normal.getY()) * (sun.getY() - normal.getY()))
-												+ ((sun.getZ() - t.getAveragePoint().getZ())
-														* (sun.getZ() - t.getAveragePoint().getZ()))))) % 1));
-		System.out.println("Converted: "+Math.toDegrees(Math
-				.acos(dotProduct(
-						new Point3D(sun.getX() - t.getAveragePoint().getX(), sun.getY() - t.getAveragePoint().getY(),
-								sun.getZ() - t.getAveragePoint().getZ()),
-						normal)
-						/ (Math.sqrt((normal.getX() + normal.getY() + normal.getZ())
-								* (normal.getX() + normal.getY() + normal.getZ())) * (Math
-										.sqrt(((sun.getX() - t.getAveragePoint().getX())
-												* (sun.getX() - t.getAveragePoint().getX()))
-												+ ((sun.getY() - normal.getY()) * (sun.getY() - normal.getY()))
-												+ ((sun.getZ() - t.getAveragePoint().getZ())
-														* (sun.getZ() - t.getAveragePoint().getZ()))))) % 1)));
-		return (float) ((Math
-				.acos(dotProduct(
-						new Point3D(sun.getX() - t.getAveragePoint().getX(), sun.getY() - t.getAveragePoint().getY(),
-								sun.getZ() - t.getAveragePoint().getZ()),
-						normal)
-						/ (Math.sqrt((normal.getX() + normal.getY() + normal.getZ())
-								* (normal.getX() + normal.getY() + normal.getZ())) * (Math
-										.sqrt(((sun.getX() - t.getAveragePoint().getX())
-												* (sun.getX() - t.getAveragePoint().getX()))
-												+ ((sun.getY() - normal.getY()) * (sun.getY() - normal.getY()))
-												+ ((sun.getZ() - t.getAveragePoint().getZ())
-														* (sun.getZ() - t.getAveragePoint().getZ()))))))
-				* 180) / Math.PI);
 	}
 
 	public static Point3D calculateAveragePoint(final Point3D[] points) {
@@ -160,10 +86,10 @@ public final class MathUtils {
 			return 0;
 		return (val > 0) ? 1 : 2;
 	}
-	
+
 	public static int[][] plotCircle(int r, float steps) {
-		int[][] points = new int[(int)steps+1][2];
-		float step = (float) ((2*Math.PI) / steps);
+		int[][] points = new int[(int) steps + 1][2];
+		float step = (float) ((2 * Math.PI) / steps);
 		int idx = 0;
 		for (float theta = 0; theta < (2 * Math.PI); theta += step) {
 			points[idx][0] = (int) (Math.sin(theta) * r);
@@ -171,26 +97,29 @@ public final class MathUtils {
 		}
 		return points;
 	}
-	
+
 	public static Face[] createSphere(int r, int z, float steps) {
-		//x z
-		int[][] in = plotCircle(r, steps);
-		float step = (float) ((2*Math.PI) / steps);
-		Point3D[][] points = new Point3D[(int)steps][(int)steps];
+		// x z
+		float step = (float) ((2 * Math.PI) / steps);
+		Point3D[][] points = new Point3D[(int) steps][(int) steps];
 		int idx1 = 0;
 		int idx2 = 0;
 		for (float theta = 0; theta < (2 * Math.PI) - step; theta += step) {
 			idx1 = 0;
 			for (float phi = 0; phi < (2 * Math.PI) - step; phi += step) {
-				points[idx2][idx1++] = new Point3D((float) (Math.cos(phi) * Math.sin(theta) * r), (float) (Math.sin(phi) * Math.sin(theta) * r), ((float) Math.cos(theta) * r) + z);
+				points[idx2][idx1++] = new Point3D((float) (Math.cos(phi) * Math.sin(theta) * r),
+						(float) (Math.sin(phi) * Math.sin(theta) * r), ((float) Math.cos(theta) * r) + z);
 			}
 			idx2++;
 		}
 		ArrayList<Face> faces = new ArrayList<Face>();
 		for (int i = 0; i < steps; i++) {
 			for (int j = 0; j < steps; j++) {
-				faces.add(new Face(new Point3D[] {points[i][j], points[(i+1) % (int)steps][j], points[i][(j+1) % (int) steps]}, Color.WHITE, false));
-				faces.add(new Face(new Point3D[] {points[(i+1) % (int) steps][j], points[(i+1) % (int) steps][(j+1) % (int) steps], points[i][(j+1) % (int) steps]}, Color.WHITE, false));
+				faces.add(new Face(new Point3D[] { points[i][j], points[(i + 1) % (int) steps][j],
+						points[i][(j + 1) % (int) steps] }, Color.WHITE, false));
+				faces.add(new Face(new Point3D[] { points[(i + 1) % (int) steps][j],
+						points[(i + 1) % (int) steps][(j + 1) % (int) steps], points[i][(j + 1) % (int) steps] },
+						Color.WHITE, false));
 			}
 		}
 		return faces.toArray(new Face[faces.size()]);
@@ -232,9 +161,10 @@ public final class MathUtils {
 	public static int distance(Point3D p1, Point3D p2) {
 		return (int) (Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2) + Math.pow(p2.z - p1.z, 2));
 	}
-	
+
 	public static long cross(Point2D p1, Point2D p2, Point2D p3) {
-		return (long) (((p2.getX() - p1.getX()) * (p3.getY() - p1.getY())) - ((p2.getY()-p1.getY()) * (p3.getX() - p1.getX())));
+		return (long) (((p2.getX() - p1.getX()) * (p3.getY() - p1.getY()))
+				- ((p2.getY() - p1.getY()) * (p3.getX() - p1.getX())));
 	}
 
 	public static boolean isInside(Point2D[] polygon, Point2D p) {

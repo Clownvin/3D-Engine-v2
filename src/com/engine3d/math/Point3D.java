@@ -20,7 +20,7 @@ public class Point3D implements ByteFormatted<Point3D> {
 		this.y = y;
 		this.z = z;
 	}
-	
+
 	public Point3D applyOffest(Point3D offsetPoint) {
 		return new Point3D(x + offsetPoint.getX(), y + offsetPoint.getY(), z + offsetPoint.getZ());
 	}

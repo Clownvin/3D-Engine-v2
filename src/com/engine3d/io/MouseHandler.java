@@ -12,31 +12,31 @@ public final class MouseHandler extends MouseAdapter {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public final class MouseHandler extends MouseAdapter {
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -62,5 +62,5 @@ public final class MouseHandler extends MouseAdapter {
 		Camera.getSingleton().updatePhi(arg0.getY() - lastMouseY);
 		lastMouseX = arg0.getX();
 		lastMouseY = arg0.getY();
- 	}
+	}
 }

@@ -27,11 +27,11 @@ public final class FaceList {
 	private FaceList() {
 		// To prevent instantiation
 	}
-	
+
 	public static FaceList getSingleton() {
 		return SINGLETON;
 	}
-	
+
 	public void queueFacesToList(Face[] faces) {
 		for (Face face : faces) {
 			FACE_LIST.add(face);
@@ -54,8 +54,8 @@ public final class FaceList {
 			if (face == null || face.getPoints().length != 3)
 				continue;
 			t = new Triangle(new Point2D[] { Camera.getSingleton().translatePoint3D(face.getPoints()[0]),
-					Camera.getSingleton().translatePoint3D(face.getPoints()[1]), Camera.getSingleton().translatePoint3D(face.getPoints()[2]) },
-					face.getColor());
+					Camera.getSingleton().translatePoint3D(face.getPoints()[1]),
+					Camera.getSingleton().translatePoint3D(face.getPoints()[2]) }, face.getColor());
 			sum = 0;
 			for (int i = 0; i < 3; i++) {
 				sum += ((t.getPoints()[(i + 1) % 3].getX() - t.getPoints()[i].getX())
@@ -68,8 +68,10 @@ public final class FaceList {
 				float calc = 0.0f;
 				Color primaryLightColor = Color.WHITE;
 				for (LightSource light : lights) {
-					float angle = MathUtils.calculateAngleRelativeToNormal(face, light.getCoordinates(), MathUtils.calculateSurfaceNormal(face));
-					calc = ((angle / 180.0f)  * (MathUtils.distance(face.getAveragePoint(), light.getCoordinates()) / light.getIntensity()));
+					float angle = MathUtils.calculateAngleRelativeToNormal(face, light.getCoordinates(),
+							MathUtils.calculateSurfaceNormal(face));
+					calc = ((angle / 180.0f) * (MathUtils.distance(face.getAveragePoint(), light.getCoordinates())
+							/ light.getIntensity()));
 					primaryLightColor = calc < percent ? light.getColor() : Color.WHITE;
 					percent = calc < percent ? calc : percent;
 				}

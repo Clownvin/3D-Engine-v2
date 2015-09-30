@@ -3,12 +3,18 @@ package com.engine3d.graphics;
 import com.engine3d.math.Point2D;
 import com.engine3d.math.Point3D;
 
+/*
+ * 
+ * This is a pretty strange file right now. It's based off of math that I found through
+ * Research on the Internet. The math for finding the camera's Z position is in desperate need of repair.
+ *
+ */
 public final class Camera {
 	private final double DEG_TO_RAD = 0.017453292;
-	private final Point3D COORDINATES = new Point3D(0, 0, 0f);
-	private final Point3D SCREEN_POSITION = new Point3D(0, 0, 40 * 48);
-	//View angle z is only one ever used?
-	private final Point3D VIEW_ANGLE = new Point3D(0, 0, 10);
+	private final Point3D coordinates = new Point3D(0, 0, 0f);
+	private final Point3D screenPosition = new Point3D(0, 0, 40 * 48);
+	// View angle z is only one ever used?
+	private final Point3D viewAngle = new Point3D(0, 0, 10);
 	private static final Camera SINGLETON = new Camera();
 	private float zoom = 70000f;
 	private float degTheta = 180f;
@@ -34,17 +40,17 @@ public final class Camera {
 			zoom = (float) Integer.MAX_VALUE;
 		}
 	}
-	
+
 	public Point3D getViewAngle() {
-		return VIEW_ANGLE;
+		return viewAngle;
 	}
-	
+
 	public Point3D getScreenPosition() {
-		return SCREEN_POSITION;
+		return screenPosition;
 	}
 
 	public Point3D getCoordinates() {
-		return COORDINATES;
+		return coordinates;
 	}
 
 	public float getDegreePhi() {
@@ -92,10 +98,10 @@ public final class Camera {
 	}
 
 	public Point2D translatePoint3D(Point3D point) {
-		double x = SCREEN_POSITION.x + point.getX() * ct - point.getY() * st;
-		double y = SCREEN_POSITION.y + point.getX() * stsp + point.getY() * ctsp + point.getZ() * cp;
-		double temp = VIEW_ANGLE.z
-				/ (SCREEN_POSITION.z + point.getX() * stcp + point.getY() * ctcp - point.getZ() * sp);
+		double x = screenPosition.x + point.getX() * ct - point.getY() * st;
+		double y = screenPosition.y + point.getX() * stsp + point.getY() * ctsp + point.getZ() * cp;
+		double temp = viewAngle.z
+				/ (screenPosition.z + point.getX() * stcp + point.getY() * ctcp - point.getZ() * sp);
 		return new Point2D((float) (screenCenter.getX() + getZoom() * temp * x),
 				(float) (screenCenter.getY() + getZoom() * temp * y));
 	}
@@ -114,9 +120,9 @@ public final class Camera {
 		ctsp = ct * sp;
 		stcp = st * cp;
 		stsp = st * sp;
-		COORDINATES.setX(x);
-		COORDINATES.setY(y);
-		COORDINATES.setZ(z);
+		coordinates.setX(x);
+		coordinates.setY(y);
+		coordinates.setZ(z);
 	}
 
 	public void updatePhi(float change) { // In degrees

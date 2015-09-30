@@ -37,9 +37,10 @@ public final class Face implements ByteFormatted<Face> {
 		this.color = color;
 		this.showBackFace = showBackFace;
 	}
-	
+
 	public Face applyOffest(Point3D offsetPoint) {
-		return new Face(new Point3D[] {points[0].applyOffest(offsetPoint), points[1].applyOffest(offsetPoint), points[2].applyOffest(offsetPoint)}, color, showBackFace);
+		return new Face(new Point3D[] { points[0].applyOffest(offsetPoint), points[1].applyOffest(offsetPoint),
+				points[2].applyOffest(offsetPoint) }, color, showBackFace);
 	}
 
 	public Point3D[] getPoints() {

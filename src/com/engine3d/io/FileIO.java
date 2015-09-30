@@ -35,7 +35,6 @@ public final class FileIO {
 		return SINGLETON;
 	}
 	
-	//TODO ERROR here!
 	// TODO revise so len is added in writeFile, not as a convention required by
 	// FMWs
 	public static <T extends FileIOFormatted<T>> T readFile(T template, String fileName) {
@@ -63,7 +62,6 @@ public final class FileIO {
 		return null;
 	}
 
-	//TODO ERROR here!
 	// TODO Document
 	/**
 	 * 

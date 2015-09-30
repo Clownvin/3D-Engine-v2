@@ -29,7 +29,7 @@ public final class Triangle {
 	public Point2D[] getPoints() {
 		return points;
 	}
-	
+
 	public int[] getXValues() {
 		int[] x = new int[points.length];
 		for (int i = 0; i < points.length; i++) {
@@ -37,7 +37,7 @@ public final class Triangle {
 		}
 		return x;
 	}
-	
+
 	public int[] getYValues() {
 		int[] y = new int[points.length];
 		for (int i = 0; i < points.length; i++) {
@@ -65,7 +65,7 @@ public final class Triangle {
 	public float getHY() {
 		return hy;
 	}
-	
+
 	public void setColor(Color color) {
 		this.color = color;
 	}
