@@ -37,7 +37,7 @@ public final class Camera {
 			zoom = 40;
 		}
 		if (zoom > Integer.MAX_VALUE) {
-			zoom = (float) Integer.MAX_VALUE;
+			zoom = Integer.MAX_VALUE;
 		}
 	}
 

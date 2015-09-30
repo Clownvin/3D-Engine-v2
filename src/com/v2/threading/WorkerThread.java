@@ -37,6 +37,7 @@ public final class WorkerThread extends Thread implements Runnable {
 		}
 	}
 
+	@Override
 	public void destroy() {
 		destroy = true;
 	}
