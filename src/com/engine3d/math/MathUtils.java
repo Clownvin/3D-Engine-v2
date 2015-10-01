@@ -99,7 +99,6 @@ public final class MathUtils {
 	}
 
 	public static Face[] createSphere(int r, int z, float steps) {
-		// x z
 		float step = (float) ((2 * Math.PI) / steps);
 		Point3D[][] points = new Point3D[(int) steps][(int) steps];
 		int idx1 = 0;

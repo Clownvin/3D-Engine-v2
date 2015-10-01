@@ -1,4 +1,4 @@
-package com.engine.util;
+package com.engine3d.graphics;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;

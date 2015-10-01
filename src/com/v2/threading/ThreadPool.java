@@ -4,7 +4,7 @@ import com.engine.util.CyclicArrayList;
 import com.engine.util.MaximumCapacityReachedException;
 
 public final class ThreadPool extends Thread implements Runnable {
-	private static final int DEFAULT_WORKERTHREADS_LENGTH = 10;
+	private static final int DEFAULT_WORKERTHREADS_LENGTH = 100;
 	private static WorkerThread[] workerThreads = new WorkerThread[DEFAULT_WORKERTHREADS_LENGTH];
 	private static final CyclicArrayList<ThreadTask> queuedTasks = new CyclicArrayList<ThreadTask>(10000);
 	private static final ThreadPool SINGLETON = new ThreadPool();
@@ -38,13 +38,27 @@ public final class ThreadPool extends Thread implements Runnable {
 	}
 
 	public static boolean hasTask() {
-		return queuedTasks.size() > 0;
+		synchronized (queuedTasks) {
+			return queuedTasks.size() > 0;
+		}
 	}
 
 	public static ThreadTask getNextTask() {
 		synchronized (queuedTasks) {
 			return queuedTasks.removeNext();
 		}
+	}
+	
+	public static int threadsSleeping() {
+		int count = 0;
+		synchronized (workerThreads) {
+			for (int i = 0; i < workerThreads.length; i++) {
+				if (!workerThreads[i].isWorking()) {
+					count++;
+				}
+			}
+		}
+		return count;
 	}
 
 	@Override

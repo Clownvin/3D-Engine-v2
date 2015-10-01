@@ -9,9 +9,7 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
-import com.engine.util.FaceList;
 import com.engine.util.MaximumCapacityReachedException;
-import com.engine.util.VideoSettings;
 import com.engine3d.environment.Environment;
 import com.engine3d.io.MouseHandler;
 import com.engine3d.math.Point2D;
@@ -73,6 +71,21 @@ public final class Engine extends JFrame {
 		return SINGLETON;
 	}
 
+	//TODO TODO TODO
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.Window#paint(java.awt.Graphics)
+	 * 
+	 * New plan!
+	 * Instead of handling triangle creation at all in this method,
+	 * I've devised a new plan where a thread (or more) will constantly
+	 * keep handling triangle creation, and pushing the new triangles to an array
+	 * which is then grabbed when this paint method is called.
+	 * 
+	 * That way, at all times, a new array of triangles will be under construction
+	 * so that this method never has to wait for anything, and can always focus entirely on
+	 * drawing the triangles/other things.
+	 */
 	@Override
 	public void paint(Graphics g) {
 		lastTime = System.nanoTime();
@@ -101,24 +114,17 @@ public final class Engine extends JFrame {
 		synchronized (FaceList.getSingleton()) {
 			triangles = FaceList.getSingleton().grabTriangles(Camera.getSingleton().getCoordinates());
 		}
-		graphics.setColor(Color.BLACK);
-		graphics.fillRect(0, 0, VideoSettings.getOutputWidth(), VideoSettings.getOutputHeight());
-		for (Triangle t : triangles) {
-			graphics.setColor(t.getColor());
-			graphics.fillPolygon(t.getXValues(), t.getYValues(), t.getPoints().length);
-			// graphics.setColor(Color.BLACK);
-			// graphics.drawPolygon(t.getXValues(), t.getYValues(),
-			// t.getPoints().length);
-		}
 		try {
 			ThreadPool.addTask(POST_RENDER_TASK);
 		} catch (MaximumCapacityReachedException e) {
 			e.printStackTrace();
 		}
-		Point2D tranLight = Camera.getSingleton()
-				.translatePoint3D(Environment.grabEnvironmentLights()[0].getCoordinates());
-		graphics.setColor(Color.MAGENTA);
-		graphics.fillRect((int) tranLight.getX() + 2, (int) tranLight.getY() + 2, 4, 4);
+		graphics.setColor(Color.BLACK);
+		graphics.fillRect(0, 0, VideoSettings.getOutputWidth(), VideoSettings.getOutputHeight());
+		for (Triangle t : triangles) {
+			graphics.setColor(t.getColor());
+			graphics.fillPolygon(t.getXValues(), t.getYValues(), t.getPoints().length);
+		}
 		drawDebugInfo(graphics, "FPS: " + ((int) fps), "CamPos: " + Camera.getSingleton().getCoordinates());
 		g.drawImage(image, 0, 0, null);
 		fps = 1000000000.0 / (System.nanoTime() - lastTime);

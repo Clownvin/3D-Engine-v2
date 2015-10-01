@@ -3,6 +3,7 @@ package com.engine.util;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 
+//Rewrite this.
 public class CyclicArrayList<T> {
 
 	private transient volatile Object[] arrayData;

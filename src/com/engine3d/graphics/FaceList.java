@@ -1,13 +1,13 @@
-package com.engine.util;
+package com.engine3d.graphics;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import com.engine.util.ColorPalette;
 import com.engine3d.environment.Environment;
 import com.engine3d.environment.LightSource;
-import com.engine3d.graphics.Camera;
 import com.engine3d.math.Face;
 import com.engine3d.math.MathUtils;
 import com.engine3d.math.Point2D;
