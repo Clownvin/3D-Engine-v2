@@ -43,7 +43,7 @@ public final class ThreadPool extends Thread implements Runnable {
 			return queuedTasks.removeNext();
 		}
 	}
-	
+
 	public static int threadsSleeping() {
 		int count = 0;
 		synchronized (workerThreads) {

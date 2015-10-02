@@ -11,10 +11,10 @@ public class CycleStack<T> {
 	private int addPointer = 0;
 	private int size = 0;
 	private volatile long modCount = 0L;
-	
+
 	private static final int DEFAULT_CAPACITY = 10;
 	private static final Object[] EMPTY_ARRAYDATA = new Object[0];
-	
+
 	public CycleStack() {
 		this.arrayData = new Object[DEFAULT_CAPACITY];
 	}
@@ -28,7 +28,7 @@ public class CycleStack<T> {
 			throw new IllegalArgumentException("Illegal Capacity: " + initialCapacity);
 		}
 	}
-	
+
 	public void setCapacity(int newCapacity) {
 		checkForComodification();
 		if (newCapacity > 0) {
@@ -48,7 +48,7 @@ public class CycleStack<T> {
 			throw new IllegalArgumentException("Illegal Capacity: " + newCapacity);
 		}
 	}
-	
+
 	public int getCapacity() {
 		return arrayData.length;
 	}
@@ -73,7 +73,7 @@ public class CycleStack<T> {
 			throw e;
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public T removeNext() {
 		modCount++;
@@ -107,7 +107,7 @@ public class CycleStack<T> {
 		}
 		return false;
 	}
-	
+
 	public void prepare(int newMemberLength) {
 		int increase = newMemberLength - (arrayData.length - size);
 		if (increase > 0)
@@ -119,7 +119,7 @@ public class CycleStack<T> {
 		addPointer %= arrayData.length;
 		takePointer %= arrayData.length;
 		if (addPointer == takePointer && size > 0) {
-			setCapacity(size+1);
+			setCapacity(size + 1);
 		}
 		checkForComodification();
 		size++;

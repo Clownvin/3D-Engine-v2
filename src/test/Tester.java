@@ -12,7 +12,7 @@ import com.engine.util.CycleStack;
 
 public class Tester {
 	public static void main(String[] args) throws InterruptedException {
-		//These are basic models I made manually for testing the engine
+		// These are basic models I made manually for testing the engine
 
 		Point3D p1 = new Point3D(0, 0, 0);
 		Point3D p2 = new Point3D(10, 0, 0);
@@ -24,7 +24,7 @@ public class Tester {
 		Model3D m2 = new Model3D(MathUtils.createSphere(50, 25, 36.0f), 2);
 		FileIO.writeFile(m1);
 		FileIO.writeFile(m2);
-		
+
 		Engine.getSingleton().setVisible(true);
 		Engine.getSingleton().setSize(800, 600);
 		while (true) {

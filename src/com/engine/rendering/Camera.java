@@ -100,8 +100,7 @@ public final class Camera {
 	public Point2D translatePoint3D(Point3D point) {
 		double x = screenPosition.x + point.getX() * ct - point.getY() * st;
 		double y = screenPosition.y + point.getX() * stsp + point.getY() * ctsp + point.getZ() * cp;
-		double temp = viewAngle.z
-				/ (screenPosition.z + point.getX() * stcp + point.getY() * ctcp - point.getZ() * sp);
+		double temp = viewAngle.z / (screenPosition.z + point.getX() * stcp + point.getY() * ctcp - point.getZ() * sp);
 		return new Point2D((float) (screenCenter.getX() + getZoom() * temp * x),
 				(float) (screenCenter.getY() + getZoom() * temp * y));
 	}

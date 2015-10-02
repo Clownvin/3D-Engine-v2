@@ -32,8 +32,6 @@ public final class FaceList {
 		return SINGLETON;
 	}
 
-	
-
 	// Sorts faces by distance, converts to triangles, and keeps the ones that
 	// are visible
 	public ArrayList<Triangle> grabTriangles(Point3D p) {

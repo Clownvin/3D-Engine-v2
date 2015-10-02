@@ -19,22 +19,22 @@ public final class RenderManager extends Thread {
 	private static volatile Face[] faceList = new Face[0];
 	private static volatile boolean kill = false;
 	private static final RenderManager SINGLETON = new RenderManager();
-	
+
 	private RenderManager() {
-		//To prevent instantiation.
+		// To prevent instantiation.
 		this.start();
 	}
-	
+
 	public static RenderManager getSingleton() {
 		return SINGLETON;
 	}
-	
+
 	public static Triangle[] getTriangles() {
 		synchronized (triangleList) {
 			return triangleList.toArray(new Triangle[triangleList.size()]);
 		}
 	}
-	
+
 	@Override
 	public void run() {
 		while (!kill) { // Lazy, replace with end condition.
@@ -42,11 +42,11 @@ public final class RenderManager extends Thread {
 			renderTriangles();
 		}
 	}
-	
+
 	public static void kill() {
 		kill = true;
 	}
-	
+
 	private void renderTriangles() {
 		Face[] layerFaces = sortByDistance(faceList, Camera.getSingleton().getCoordinates());
 		LightSource[] lights = Environment.grabEnvironmentLights();
@@ -92,7 +92,8 @@ public final class RenderManager extends Thread {
 		final Comparator<Face> faceComparator = new Comparator<Face>() {
 			@Override
 			public int compare(Face o1, Face o2) {
-				return MathUtils.distance(o2.getAveragePoint(), newPoint) - MathUtils.distance(o1.getAveragePoint(), newPoint);
+				return MathUtils.distance(o2.getAveragePoint(), newPoint)
+						- MathUtils.distance(o1.getAveragePoint(), newPoint);
 			}
 		};
 		Arrays.sort(faces, faceComparator);
