@@ -23,16 +23,6 @@ public enum ColorPalette {
 																							Color.YELLOW), PURPLE(
 																									mixColors(Color.RED,
 																											Color.BLUE));
-	private final Color color;
-
-	private ColorPalette(Color color) {
-		this.color = color;
-	}
-
-	public Color getColor() {
-		return color;
-	}
-
 	public static Color darken(Color color, double percent) {
 		if (percent > 1) {
 			percent = 1;
@@ -44,15 +34,6 @@ public enum ColorPalette {
 		return new Color((int) (r * d), (int) (g * d), (int) (b * d));
 	}
 
-	public static Color lightFilter(Color original, Color light) {
-		float rPercent = original.getRed() / 0xFF;
-		float gPercent = original.getGreen() / 0xFF;
-		float bPercent = original.getBlue() / 0xFF;
-		return new Color((int) rPercent * light.getRed(), (int) gPercent * light.getGreen(),
-				(int) bPercent * light.getBlue());
-
-	}
-
 	public static Color getOpposite(Color color) {
 		int r = 255 - color.getRed();
 		int g = 255 - color.getGreen();
@@ -60,11 +41,13 @@ public enum ColorPalette {
 		return new Color(r, g, b);
 	}
 
-	public static Color setAlpha(Color color, int alpha) {
-		int r = color.getRed();
-		int g = color.getGreen();
-		int b = color.getBlue();
-		return new Color(r, g, b, alpha);
+	public static Color lightFilter(Color original, Color light) {
+		float rPercent = original.getRed() / 0xFF;
+		float gPercent = original.getGreen() / 0xFF;
+		float bPercent = original.getBlue() / 0xFF;
+		return new Color((int) rPercent * light.getRed(), (int) gPercent * light.getGreen(),
+				(int) bPercent * light.getBlue());
+
 	}
 
 	public static Color mixColors(Color color1, Color color2) {
@@ -76,5 +59,22 @@ public enum ColorPalette {
 		g += color2.getGreen();
 		b += color2.getBlue();
 		return new Color(r / 2, g / 2, b / 2);
+	}
+
+	public static Color setAlpha(Color color, int alpha) {
+		int r = color.getRed();
+		int g = color.getGreen();
+		int b = color.getBlue();
+		return new Color(r, g, b, alpha);
+	}
+
+	private final Color color;
+
+	private ColorPalette(Color color) {
+		this.color = color;
+	}
+
+	public Color getColor() {
+		return color;
 	}
 }

@@ -2,13 +2,13 @@ package com.engine.math;
 
 import java.awt.Color;
 
-public final class Triangle {
-	private Point2D[] points;
+public final class Triangle extends Polygon {
 	private Color color;
-	private float lx = Integer.MAX_VALUE, ly = Integer.MAX_VALUE, hx = Integer.MIN_VALUE, hy = Integer.MIN_VALUE;
+	private int lx = Integer.MAX_VALUE, ly = Integer.MAX_VALUE, hx = Integer.MIN_VALUE, hy = Integer.MIN_VALUE;
+	private int sourceID = -1;
 
 	public Triangle(Point2D[] points, Color color) {
-		this.points = points;
+		super(points);
 		this.color = color;
 		for (Point2D point : points) {
 			if (point.getX() < lx) {
@@ -25,9 +25,34 @@ public final class Triangle {
 			}
 		}
 	}
+	
+	public Triangle setSourceID(int sourceID) {
+		this.sourceID = sourceID;
+		return this;
+	}
+	
+	public int getSourceID() {
+		return sourceID;
+	}
 
-	public Point2D[] getPoints() {
-		return points;
+	public Color getColor() {
+		return color;
+	}
+
+	public float getHX() {
+		return hx;
+	}
+
+	public float getHY() {
+		return hy;
+	}
+
+	public float getLX() {
+		return lx;
+	}
+
+	public float getLY() {
+		return ly;
 	}
 
 	public int[] getXValues() {
@@ -44,26 +69,6 @@ public final class Triangle {
 			y[i] = (int) points[i].getY();
 		}
 		return y;
-	}
-
-	public Color getColor() {
-		return color;
-	}
-
-	public float getLX() {
-		return lx;
-	}
-
-	public float getLY() {
-		return ly;
-	}
-
-	public float getHX() {
-		return hx;
-	}
-
-	public float getHY() {
-		return hy;
 	}
 
 	public void setColor(Color color) {

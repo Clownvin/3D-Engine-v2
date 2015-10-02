@@ -8,19 +8,11 @@ public final class ThreadPool extends Thread implements Runnable {
 	private static final CycleStack<ThreadTask> queuedTasks = new CycleStack<ThreadTask>(10000);
 	private static final ThreadPool SINGLETON = new ThreadPool();
 
-	private ThreadPool() {
-		// To prevent instantiation.
-	}
-
 	static {
 		for (int i = 0; i < workerThreads.length; i++) {
 			workerThreads[i] = new WorkerThread(SINGLETON);
 		}
 		SINGLETON.start();
-	}
-
-	public static ThreadPool getSingleton() {
-		return SINGLETON;
 	}
 
 	public static void addTask(ThreadTask task) {
@@ -32,15 +24,21 @@ public final class ThreadPool extends Thread implements Runnable {
 		}
 	}
 
-	public static boolean hasTask() {
+	public static ThreadTask getNextTask() {
 		synchronized (queuedTasks) {
-			return queuedTasks.size() > 0;
+			if (!hasTask()) 
+				return null;
+			return queuedTasks.removeNext();
 		}
 	}
 
-	public static ThreadTask getNextTask() {
+	public static ThreadPool getSingleton() {
+		return SINGLETON;
+	}
+
+	public static boolean hasTask() {
 		synchronized (queuedTasks) {
-			return queuedTasks.removeNext();
+			return queuedTasks.size() > 0;
 		}
 	}
 
@@ -54,6 +52,10 @@ public final class ThreadPool extends Thread implements Runnable {
 			}
 		}
 		return count;
+	}
+
+	private ThreadPool() {
+		// To prevent instantiation.
 	}
 
 	@Override

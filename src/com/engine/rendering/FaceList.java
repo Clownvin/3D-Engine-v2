@@ -24,12 +24,16 @@ public final class FaceList {
 	private static final ArrayList<Face> FACE_LIST = new ArrayList<Face>();
 	private static final FaceList SINGLETON = new FaceList();
 
+	public static FaceList getSingleton() {
+		return SINGLETON;
+	}
+
 	private FaceList() {
 		// To prevent instantiation
 	}
 
-	public static FaceList getSingleton() {
-		return SINGLETON;
+	public void clear() {
+		FACE_LIST.clear();
 	}
 
 	// Sorts faces by distance, converts to triangles, and keeps the ones that
@@ -81,9 +85,5 @@ public final class FaceList {
 		};
 		Arrays.sort(faces, faceComparator);
 		return faces;
-	}
-
-	public void clear() {
-		FACE_LIST.clear();
 	}
 }

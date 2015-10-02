@@ -3,20 +3,37 @@ package com.engine.math;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import com.engine.rendering.VideoSettings;
 
 public final class MathUtils {
 	private static final MathUtils SINGLETON = new MathUtils();
 
-	private MathUtils() {
-		// To prevent instantiation.
+	public static float calculateAngleRelativeToNormal(final Face t, final Point3D sun, final Point3D normal) {
+		return (float) ((Math.acos(dotProduct(
+				normalizeVector(new Point3D(sun.getX() - t.getAveragePoint().getX(),
+						sun.getY() - t.getAveragePoint().getY(), sun.getZ() - t.getAveragePoint().getZ())),
+				normalizeVector(normal))) * 180) / Math.PI);
 	}
 
-	public static MathUtils getSingleton() {
-		return SINGLETON;
+	public static Point2D calculateAveragePoint(final Point2D[] points) {
+		int x = 0, y = 0;
+		for (int i = 0; i < points.length; i++) {
+			x += points[i].getX();
+			y += points[i].getY();
+		}
+		return new Point2D(x / points.length, y / points.length);
 	}
 
-	public static boolean coordinateInArea(final int x, final int y, final Dimension area) {
-		return (x >= 0 && y >= 0) && (x <= area.getWidth() && y <= area.getHeight());
+	public static Point3D calculateAveragePoint(final Point3D[] points) {
+		float x = 0, y = 0, z = 0;
+		for (int i = 0; i < points.length; i++) {
+			x += points[i].getX();
+			y += points[i].getY();
+			z += points[i].getZ();
+		}
+		return new Point3D(x / points.length, y / points.length, z / points.length);
 	}
 
 	public static Point3D calculateSurfaceNormal(final Face t) {
@@ -32,70 +49,35 @@ public final class MathUtils {
 		return normal;
 	}
 
-	public static float dotProduct(Point3D p1, Point3D p2) {
-		return (p1.getX() * p2.getX()) + (p1.getY() * p2.getY()) + (p1.getZ() * p2.getZ());
-	}
+	public static Polygon convexHull(Point2D[] points) {
+		if (points.length > 1) {
+			int n = points.length, k = 0;
+			Point2D[] h = new Point2D[2 * n];
+			Arrays.sort(points);
+			for (int i = 0; i < n; ++i) {
+				while (k >= 2 && cross(h[k - 2], h[k - 1], points[i]) <= 0)
+					k--;
+				h[k++] = points[i];
+			}
 
-	public static float calculateAngleRelativeToNormal(final Face t, final Point3D sun, final Point3D normal) {
-		return (float) ((Math.acos(dotProduct(
-				normalizeVector(new Point3D(sun.getX() - t.getAveragePoint().getX(),
-						sun.getY() - t.getAveragePoint().getY(), sun.getZ() - t.getAveragePoint().getZ())),
-				normalizeVector(normal))) * 180) / Math.PI);
-	}
-
-	public static Point3D normalizeVector(Point3D vector) {
-		float magnitude = (float) Math
-				.sqrt(Math.pow(vector.getX(), 2) + Math.pow(vector.getY(), 2) + Math.pow(vector.getZ(), 2));
-		return new Point3D(vector.getX() / magnitude, vector.getY() / magnitude, vector.getZ() / magnitude);
-	}
-
-	public static Point3D calculateAveragePoint(final Point3D[] points) {
-		float x = 0, y = 0, z = 0;
-		for (int i = 0; i < points.length; i++) {
-			x += points[i].getX();
-			y += points[i].getY();
-			z += points[i].getZ();
+			for (int i = n - 2, t = k + 1; i >= 0; i--) {
+				while (k >= t && cross(h[k - 2], h[k - 1], points[i]) <= 0)
+					k--;
+				h[k++] = points[i];
+			}
+			if (k > 1) {
+				h = Arrays.copyOfRange(h, 0, k - 1);
+			}
+			return new Polygon(h);
+		} else if (points.length <= 1) {
+			return new Polygon(points);
+		} else {
+			return null;
 		}
-		return new Point3D(x / points.length, y / points.length, z / points.length);
 	}
 
-	public static Point2D calculateAveragePoint(final Point2D[] points) {
-		float x = 0, y = 0;
-		for (int i = 0; i < points.length; i++) {
-			x += points[i].getX();
-			y += points[i].getY();
-		}
-		return new Point2D(x / points.length, y / points.length);
-	}
-
-	private static boolean onSegment(Point2D p, Point2D q, Point2D r) {
-		if (q.getX() <= getLargest(p.getX(), r.getX()) && q.getX() >= getLargest(p.getX(), r.getX())
-				&& q.getY() <= getLargest(p.getY(), r.getY()) && q.getY() >= getLargest(p.getY(), r.getY()))
-			return true;
-		return false;
-	}
-
-	private static float getLargest(float a, float b) {
-		return (a < b) ? b : a;
-	}
-
-	private static float orientation(Point2D p, Point2D q, Point2D r) {
-		float val = (q.getY() - p.getY()) * (r.getX() - q.getX()) - (q.getX() - p.getX()) * (r.getY() - q.getY());
-
-		if (val == 0)
-			return 0;
-		return (val > 0) ? 1 : 2;
-	}
-
-	public static int[][] plotCircle(int r, float steps) {
-		int[][] points = new int[(int) steps + 1][2];
-		float step = (float) ((2 * Math.PI) / steps);
-		int idx = 0;
-		for (float theta = 0; theta < (2 * Math.PI); theta += step) {
-			points[idx][0] = (int) (Math.sin(theta) * r);
-			points[idx++][1] = (int) (Math.cos(theta) * r);
-		}
-		return points;
+	public static boolean coordinateInArea(final int x, final int y, final Dimension area) {
+		return (x >= 0 && y >= 0) && (x <= area.getWidth() && y <= area.getHeight());
 	}
 
 	public static Face[] createSphere(int r, int z, float steps) {
@@ -122,6 +104,15 @@ public final class MathUtils {
 			}
 		}
 		return faces.toArray(new Face[faces.size()]);
+	}
+
+	public static double cross(Point2D p1, Point2D p2, Point2D p3) {
+		return (double) (((p2.getX() - p1.getX()) * (p3.getY() - p1.getY()))
+				- ((p2.getY() - p1.getY()) * (p3.getX() - p1.getX())));
+	}
+
+	public static int distance(Point3D p1, Point3D p2) {
+		return (int) Math.sqrt((Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2) + Math.pow(p2.z - p1.z, 2)));
 	}
 
 	private static boolean doIntersect(Point2D p1, Point2D q1, Point2D p2, Point2D q2) {
@@ -157,31 +148,70 @@ public final class MathUtils {
 		return false;
 	}
 
-	public static int distance(Point3D p1, Point3D p2) {
-		return (int) Math.sqrt((Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2) + Math.pow(p2.z - p1.z, 2)));
+	public static float dotProduct(Point3D p1, Point3D p2) {
+		return (p1.getX() * p2.getX()) + (p1.getY() * p2.getY()) + (p1.getZ() * p2.getZ());
 	}
 
-	public static long cross(Point2D p1, Point2D p2, Point2D p3) {
-		return (long) (((p2.getX() - p1.getX()) * (p3.getY() - p1.getY()))
-				- ((p2.getY() - p1.getY()) * (p3.getX() - p1.getX())));
+	private static float getLargest(float a, float b) {
+		return (a < b) ? b : a;
+	}
+
+	public static MathUtils getSingleton() {
+		return SINGLETON;
 	}
 
 	public static boolean isInside(Point2D[] polygon, Point2D p) {
 		int vertices = polygon.length;
 		if (vertices < 3)
 			return false;
-		Point2D extreme = new Point2D(10000, p.getY());
+		Point2D extreme = new Point2D(VideoSettings.getMaxOutputWidth() + 100,
+				VideoSettings.getMaxOutputHeight() + 100);
 		int count = 0, i = 0;
 		do {
 			int next = (i + 1) % vertices;
 			if (doIntersect(polygon[i], polygon[next], p, extreme)) {
 				if (orientation(polygon[i], p, polygon[next]) == 0)
 					return onSegment(polygon[i], p, polygon[next]);
-
 				count++;
 			}
 			i = next;
 		} while (i != 0);
 		return count % 2 == 1;
+	}
+
+	public static Point3D normalizeVector(Point3D vector) {
+		float magnitude = (float) Math
+				.sqrt(Math.pow(vector.getX(), 2) + Math.pow(vector.getY(), 2) + Math.pow(vector.getZ(), 2));
+		return new Point3D(vector.getX() / magnitude, vector.getY() / magnitude, vector.getZ() / magnitude);
+	}
+
+	private static boolean onSegment(Point2D p, Point2D q, Point2D r) {
+		if (q.getX() <= getLargest(p.getX(), r.getX()) && q.getX() >= getLargest(p.getX(), r.getX())
+				&& q.getY() <= getLargest(p.getY(), r.getY()) && q.getY() >= getLargest(p.getY(), r.getY()))
+			return true;
+		return false;
+	}
+
+	private static float orientation(Point2D p, Point2D q, Point2D r) {
+		float val = (q.getY() - p.getY()) * (r.getX() - q.getX()) - (q.getX() - p.getX()) * (r.getY() - q.getY());
+
+		if (val == 0)
+			return 0;
+		return (val > 0) ? 1 : 2;
+	}
+
+	public static int[][] plotCircle(int r, float steps) {
+		int[][] points = new int[(int) steps + 1][2];
+		float step = (float) ((2 * Math.PI) / steps);
+		int idx = 0;
+		for (float theta = 0; theta < (2 * Math.PI); theta += step) {
+			points[idx][0] = (int) (Math.sin(theta) * r);
+			points[idx++][1] = (int) (Math.cos(theta) * r);
+		}
+		return points;
+	}
+
+	private MathUtils() {
+		// To prevent instantiation.
 	}
 }

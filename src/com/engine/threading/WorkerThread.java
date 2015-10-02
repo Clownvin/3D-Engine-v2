@@ -12,6 +12,15 @@ public final class WorkerThread extends Thread implements Runnable {
 	}
 
 	@Override
+	public void destroy() {
+		destroy = true;
+	}
+
+	public boolean isWorking() {
+		return isWorking;
+	}
+
+	@Override
 	public void run() {
 		while (!destroy) {
 			synchronized (threadPool) {
@@ -35,14 +44,5 @@ public final class WorkerThread extends Thread implements Runnable {
 			}
 			isWorking = false;
 		}
-	}
-
-	@Override
-	public void destroy() {
-		destroy = true;
-	}
-
-	public boolean isWorking() {
-		return isWorking;
 	}
 }

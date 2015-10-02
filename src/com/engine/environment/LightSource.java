@@ -14,27 +14,27 @@ public final class LightSource {
 		this.intensity = intensity;
 	}
 
-	public void setIntensity(float intensity) {
-		this.intensity = intensity;
-	}
-
-	public void setCoordinates(Point3D coordinates) {
-		this.coordinates = coordinates;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
-	}
-
-	public float getIntensity() {
-		return intensity;
-	}
-
 	public Color getColor() {
 		return color;
 	}
 
 	public Point3D getCoordinates() {
 		return coordinates;
+	}
+
+	public float getIntensity() {
+		return intensity;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
+	public void setCoordinates(Point3D coordinates) {
+		this.coordinates = coordinates;
+	}
+
+	public void setIntensity(float intensity) {
+		this.intensity = intensity;
 	}
 }

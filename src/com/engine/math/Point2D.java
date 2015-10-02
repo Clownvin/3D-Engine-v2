@@ -1,33 +1,40 @@
 package com.engine.math;
 
-public final class Point2D {
-	private float x = 0f, y = 0f;
+public final class Point2D implements Comparable<Point2D> {
+	private final int x, y;
 
-	public Point2D(final float x, final float y) {
-		this.x = x;
-		this.y = y;
+	public Point2D(final int x, final int y) {
+		this.x = (int) x;
+		this.y = (int) y;
 	}
 
-	public Point2D setX(final float x) {
-		this.x = x;
-		return this;
-	}
-
-	public Point2D setY(final float y) {
-		this.y = y;
-		return this;
-	}
-
-	public float getX() {
+	public int getX() {
 		return x;
 	}
 
-	public float getY() {
+	public int getY() {
 		return y;
+	}
+
+	public Point2D setX(final int newX) {
+		return new Point2D(newX, y);
+	}
+
+	public Point2D setY(final int newY) {
+		return new Point2D(x, newY);
 	}
 
 	@Override
 	public String toString() {
 		return "(" + x + "," + y + ")";
+	}
+
+	@Override
+	public int compareTo(Point2D p) {
+		int xvals = (p.getX() - x);
+		if (xvals == 0) {
+			return (p.getY() - y);
+		}
+		return xvals;
 	}
 }

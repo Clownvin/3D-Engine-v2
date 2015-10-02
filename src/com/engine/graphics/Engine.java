@@ -8,6 +8,8 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
+import com.engine.environment.Environment;
+import com.engine.environment.EnvironmentObject;
 import com.engine.io.MouseHandler;
 import com.engine.math.Point2D;
 import com.engine.math.Triangle;
@@ -26,6 +28,10 @@ public final class Engine extends JFrame {
 	private static BufferedImage image = null;
 	private static Graphics2D graphics = null;
 
+	public static Engine getSingleton() {
+		return SINGLETON;
+	}
+
 	private Engine() {
 		System.setProperty("sun.java2d.opengl", "true");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -36,8 +42,15 @@ public final class Engine extends JFrame {
 		// To prevent instantiation.
 	}
 
-	public static Engine getSingleton() {
-		return SINGLETON;
+	private void drawDebugInfo(Graphics g, String... strings) {
+		g.setColor(Color.BLACK);
+		for (int i = 0; i < strings.length; i++) {
+			g.drawString(strings[i], 8, (i * 10) + 39);
+		}
+		g.setColor(Color.GREEN);
+		for (int i = 0; i < strings.length; i++) {
+			g.drawString(strings[i], 9, (i * 10) + 40);
+		}
 	}
 
 	// TODO TODO TODO
@@ -54,6 +67,8 @@ public final class Engine extends JFrame {
 	 * That way, at all times, a new array of triangles will be under
 	 * construction so that this method never has to wait for anything, and can
 	 * always focus entirely on drawing the triangles/other things.
+	 * 
+	 * [Edit] New plan is active, and works fine.
 	 */
 	@Override
 	public void paint(Graphics g) {
@@ -78,19 +93,29 @@ public final class Engine extends JFrame {
 			graphics.setColor(t.getColor());
 			graphics.fillPolygon(t.getXValues(), t.getYValues(), t.getPoints().length);
 		}
+		graphics.setColor(Color.ORANGE);
+		try {
+			for (EnvironmentObject e : Environment.getObjectsAtCoordinate((int) MouseHandler.getMouseX(),
+					(int) MouseHandler.getMouseY())) {
+				if (e.getOutline() != null)
+						graphics.drawPolygon(e.getOutline().getXValues(), e.getOutline().getYValues(),
+								e.getOutline().getPoints().length);
+			}
+		} catch (java.lang.NoClassDefFoundError e) { //Shouldn't ever happen unless there was a problem in Environment
+			e.printStackTrace();
+			System.exit(1);
+		}
 		drawDebugInfo(graphics, "FPS: " + ((int) fps), "CamPos: " + Camera.getSingleton().getCoordinates());
 		g.drawImage(image, 0, 0, null);
+		// For fps capping
+		long sleepTime = (long) (((1000000000.0 / VideoSettings.getFramesPerSecondCap())
+				- (System.nanoTime() - lastTime))) / 1000000;
+		if (sleepTime > 0) {
+			try {
+				Thread.sleep(sleepTime);
+			} catch (InterruptedException e) {
+			}
+		}
 		fps = 1000000000.0 / (System.nanoTime() - lastTime);
-	}
-
-	private void drawDebugInfo(Graphics g, String... strings) {
-		g.setColor(Color.BLACK);
-		for (int i = 0; i < strings.length; i++) {
-			g.drawString(strings[i], 8, (i * 10) + 39);
-		}
-		g.setColor(Color.GREEN);
-		for (int i = 0; i < strings.length; i++) {
-			g.drawString(strings[i], 9, (i * 10) + 40);
-		}
 	}
 }

@@ -8,11 +8,19 @@ import com.engine.math.Face;
 import com.engine.math.MathUtils;
 import com.engine.math.Point3D;
 import com.engine.models.Model3D;
-import com.engine.util.CycleStack;
+import com.engine.util.IDTagSystem;
+import com.engine.util.IDTagSystem.IDTag;
 
 public class Tester {
 	public static void main(String[] args) throws InterruptedException {
 		// These are basic models I made manually for testing the engine
+
+		IDTagSystem testSystem = new IDTagSystem(10);
+		for (int i = 0; i < 11; i++) {
+			IDTag tag = testSystem.getTag();
+			System.out.println(tag.getID());
+			tag.returnTag();
+		}
 
 		Point3D p1 = new Point3D(0, 0, 0);
 		Point3D p2 = new Point3D(10, 0, 0);
@@ -29,7 +37,6 @@ public class Tester {
 		Engine.getSingleton().setSize(800, 600);
 		while (true) {
 			Engine.getSingleton().repaint();
-			Thread.sleep(2);
 		}
 	}
 }

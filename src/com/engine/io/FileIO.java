@@ -14,6 +14,8 @@ import com.engine.util.BinaryOperations;
  */
 
 public final class FileIO {
+	private static final FileIO SINGLETON = new FileIO();
+
 	// TODO Document
 	/**
 	 * 
@@ -81,8 +83,6 @@ public final class FileIO {
 			e.printStackTrace();
 		}
 	}
-
-	private static final FileIO SINGLETON = new FileIO();
 
 	// TODO Document
 	/**

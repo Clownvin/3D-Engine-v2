@@ -8,20 +8,16 @@ public final class ModelManager {
 	private static final ModelManager SINGLETON = new ModelManager();
 	private static final TreeMap<Integer, Model3D> MODEL_LIST = new TreeMap<Integer, Model3D>();
 
-	private ModelManager() {
-		// To prevent instantiation
-	}
-
-	public static ModelManager getSingleton() {
-		return SINGLETON;
-	}
-
 	public static Model3D getModel(Integer modelID) {
 		Model3D mod = MODEL_LIST.get(modelID);
 		if (mod == null) {
 			mod = loadModel(modelID);
 		}
 		return mod;
+	}
+
+	public static ModelManager getSingleton() {
+		return SINGLETON;
 	}
 
 	public static Model3D loadModel(Integer modelID) {
@@ -32,5 +28,9 @@ public final class ModelManager {
 		Model3D mod = FileIO.readFile(Model3D.getBuilder(), "Model_" + modelID);
 		MODEL_LIST.put(modelID, mod);
 		return mod;
+	}
+
+	private ModelManager() {
+		// To prevent instantiation
 	}
 }

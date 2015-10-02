@@ -5,6 +5,11 @@ import com.engine.util.ByteFormatted;
 
 public class Point3D implements ByteFormatted<Point3D> {
 	private static final Point3D POINT3D_BUILDER = new Point3D();
+
+	public static Point3D getBuilder() {
+		return POINT3D_BUILDER;
+	}
+
 	public final float x, y, z;
 
 	private Point3D() {
@@ -12,10 +17,6 @@ public class Point3D implements ByteFormatted<Point3D> {
 		x = 0;
 		y = 0;
 		z = 0;
-	}
-
-	public static Point3D getBuilder() {
-		return POINT3D_BUILDER;
 	}
 
 	public Point3D(float x, float y, float z) {
@@ -26,6 +27,12 @@ public class Point3D implements ByteFormatted<Point3D> {
 
 	public Point3D applyOffest(Point3D offsetPoint) {
 		return new Point3D(x + offsetPoint.getX(), y + offsetPoint.getY(), z + offsetPoint.getZ());
+	}
+
+	@Override
+	public Point3D fromBytes(byte[] bytes) {
+		float[] floats = BinaryOperations.byteArrayToFloatArray(bytes);
+		return new Point3D(floats[0], floats[1], floats[2]);
 	}
 
 	public float getX() {
@@ -52,21 +59,15 @@ public class Point3D implements ByteFormatted<Point3D> {
 		return new Point3D(x, y, newZ);
 	}
 
-	// Length = 12bytes
-	@Override
-	public byte[] toBytes() {
-		return BinaryOperations.toBytes(new float[] { x, y, z });
-	}
-
 	@Override
 	public int sizeOf() {
 		return 12;
 	}
 
+	// Length = 12bytes
 	@Override
-	public Point3D fromBytes(byte[] bytes) {
-		float[] floats = BinaryOperations.byteArrayToFloatArray(bytes);
-		return new Point3D(floats[0], floats[1], floats[2]);
+	public byte[] toBytes() {
+		return BinaryOperations.toBytes(new float[] { x, y, z });
 	}
 
 	@Override

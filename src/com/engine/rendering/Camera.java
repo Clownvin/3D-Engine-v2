@@ -10,12 +10,17 @@ import com.engine.math.Point3D;
  *
  */
 public final class Camera {
+	private static final Camera SINGLETON = new Camera();
+
+	public static Camera getSingleton() {
+		return SINGLETON;
+	}
+
 	private final double DEG_TO_RAD = 0.017453292;
 	private Point3D coordinates = new Point3D(0, 0, 0f);
 	private final Point3D screenPosition = new Point3D(0, 0, 40 * 48);
 	// View angle z is only one ever used?
 	private final Point3D viewAngle = new Point3D(0, 0, 10);
-	private static final Camera SINGLETON = new Camera();
 	private float zoom = 70000f;
 	private float degTheta = 180f;
 	private float degPhi = 150f;
@@ -29,7 +34,12 @@ public final class Camera {
 	private float st = 0f;
 	private float cp = 0f;
 	private float sp = 0f;
+
 	private Point2D screenCenter = new Point2D(0, 0);
+
+	private Camera() {
+		updateCoordinates();
+	}
 
 	public void changeZoom(int i) {
 		zoom += i;
@@ -39,14 +49,6 @@ public final class Camera {
 		if (zoom > Integer.MAX_VALUE) {
 			zoom = Integer.MAX_VALUE;
 		}
-	}
-
-	public Point3D getViewAngle() {
-		return viewAngle;
-	}
-
-	public Point3D getScreenPosition() {
-		return screenPosition;
 	}
 
 	public Point3D getCoordinates() {
@@ -85,8 +87,12 @@ public final class Camera {
 		return (float) ((radTheta - (90 * DEG_TO_RAD)) + (n * DEG_TO_RAD));
 	}
 
-	public static Camera getSingleton() {
-		return SINGLETON;
+	public Point3D getScreenPosition() {
+		return screenPosition;
+	}
+
+	public Point3D getViewAngle() {
+		return viewAngle;
 	}
 
 	public float getZoom() {
@@ -101,12 +107,13 @@ public final class Camera {
 		double x = screenPosition.x + point.getX() * ct - point.getY() * st;
 		double y = screenPosition.y + point.getX() * stsp + point.getY() * ctsp + point.getZ() * cp;
 		double temp = viewAngle.z / (screenPosition.z + point.getX() * stcp + point.getY() * ctcp - point.getZ() * sp);
-		return new Point2D((float) (screenCenter.getX() + getZoom() * temp * x),
-				(float) (screenCenter.getY() + getZoom() * temp * y));
+		return new Point2D((int) (screenCenter.getX() + getZoom() * temp * x),
+				(int) (screenCenter.getY() + getZoom() * temp * y));
 	}
-
+	
+	//This cannot be called by any thread other than RenderManager
 	public void updateCoordinates() {
-		float r = ((1 / zoom) * 100000) * 30f;
+		float r = ((1 / getZoom()) * 1000000);
 		float z = (float) (r * Math.sin(getRadianPhi()));
 		float rad = (float) (r * Math.cos(getRadianPhi()));
 		float y = (float) (rad * Math.sin(getRadianTheta()));
@@ -126,17 +133,11 @@ public final class Camera {
 		degPhi += change;
 		degPhi %= 360;
 		radPhi = (float) (degPhi * DEG_TO_RAD);
-		updateCoordinates();
 	}
 
 	public void updateTheta(float change) { // In degrees
 		degTheta += change;
 		degTheta %= 360;
 		radTheta = (float) ((degTheta - 90) * DEG_TO_RAD);
-		updateCoordinates();
-	}
-
-	private Camera() {
-		updateCoordinates();
 	}
 }

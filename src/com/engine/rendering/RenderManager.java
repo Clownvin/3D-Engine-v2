@@ -1,3 +1,20 @@
+/*
+ * Notes 10/2/2015:
+ * 	It appears that the only thing really affecting the time of this method is the amount of faces being rendered.
+ * 
+ * Ideas:
+ * 
+ * To solve the issue with outlines, consider only creating outlines for objects roughly within range of mouse
+ * 
+ * To solve lighting, consider moving it somewhere else, such as directly affecting faces before they even get here.
+ * Or even have a separate lighting thread specifically for the purpose of lighting calculations. 
+ * 
+ * Remember: It's often more efficient to check if you should do something before doing something to everything.
+ * 
+ * 
+ */
+
+
 package com.engine.rendering;
 
 import java.awt.Color;
@@ -7,23 +24,22 @@ import java.util.Comparator;
 
 import com.engine.environment.Environment;
 import com.engine.environment.LightSource;
+import com.engine.io.MouseHandler;
 import com.engine.math.Face;
 import com.engine.math.MathUtils;
+import com.engine.math.OutlineBuffer;
 import com.engine.math.Point2D;
 import com.engine.math.Point3D;
 import com.engine.math.Triangle;
 import com.engine.util.ColorPalette;
+import com.engine.util.TimeProfiler;
 
 public final class RenderManager extends Thread {
 	private static volatile ArrayList<Triangle> triangleList = new ArrayList<Triangle>();
+	private static int[] lastOutlineIDs = new int[0];
 	private static volatile Face[] faceList = new Face[0];
 	private static volatile boolean kill = false;
 	private static final RenderManager SINGLETON = new RenderManager();
-
-	private RenderManager() {
-		// To prevent instantiation.
-		this.start();
-	}
 
 	public static RenderManager getSingleton() {
 		return SINGLETON;
@@ -35,55 +51,112 @@ public final class RenderManager extends Thread {
 		}
 	}
 
-	@Override
-	public void run() {
-		while (!kill) { // Lazy, replace with end condition.
-			faceList = Environment.grabEnvironmentFaces();
-			renderTriangles();
-		}
-	}
-
 	public static void kill() {
 		kill = true;
 	}
+
+	private RenderManager() {
+		// To prevent instantiation.
+		this.start();
+	}
+	
+	TimeProfiler outlineProfiler = new TimeProfiler("Outline", TimeProfiler.TYPE_NANO, 1000);
+	TimeProfiler renderProfiler = new TimeProfiler("Render", TimeProfiler.TYPE_NANO, 1000);
 
 	private void renderTriangles() {
 		Face[] layerFaces = sortByDistance(faceList, Camera.getSingleton().getCoordinates());
 		LightSource[] lights = Environment.grabEnvironmentLights();
 		Triangle t;
 		int sum;
+		float percent;
+		float calc;
+		float angle;
+		Color primaryLightColor;
 		ArrayList<Triangle> triangles = new ArrayList<Triangle>(faceList.length);
+		ArrayList<OutlineBuffer> outlineBuffers = new ArrayList<OutlineBuffer>();
+		renderProfiler.start();
+		Point2D mousePoint = new Point2D((int) MouseHandler.getMouseX(), (int) MouseHandler.getMouseY());
 		for (Face face : layerFaces) {
 			if (face == null || face.getPoints().length != 3)
 				continue;
 			t = new Triangle(new Point2D[] { Camera.getSingleton().translatePoint3D(face.getPoints()[0]),
 					Camera.getSingleton().translatePoint3D(face.getPoints()[1]),
 					Camera.getSingleton().translatePoint3D(face.getPoints()[2]) }, face.getColor());
+			if (!(((t.getLX() < VideoSettings.getOutputWidth() && t.getHX() > 0)
+					&& (t.getLY() < VideoSettings.getOutputHeight() && t.getHY() > 0)))) {
+				continue;
+			}
 			sum = 0;
 			for (int i = 0; i < 3; i++) {
 				sum += ((t.getPoints()[(i + 1) % 3].getX() - t.getPoints()[i].getX())
 						* (t.getPoints()[(i + 1) % 3].getY() + t.getPoints()[i].getY()));
 			}
-			if ((sum < 0 || face.showBackFace()) && (((t.getLX() < VideoSettings.getOutputWidth() && t.getHX() > 0)
-					&& (t.getLY() < VideoSettings.getOutputHeight() && t.getHY() > 0)))) {
+			if ((sum < 0 || face.showBackFace())) {
 				t.setColor(face.getColor());
-				float percent = 1.0f;
-				float calc = 0.0f;
-				Color primaryLightColor = Color.WHITE;
+				percent = 1.0f;
+				calc = 0.0f;
+				primaryLightColor = Color.WHITE;
 				for (LightSource light : lights) {
-					float angle = MathUtils.calculateAngleRelativeToNormal(face, light.getCoordinates(),
+					angle = MathUtils.calculateAngleRelativeToNormal(face, light.getCoordinates(),
 							MathUtils.calculateSurfaceNormal(face));
 					calc = ((angle / 180.0f) * (MathUtils.distance(face.getAveragePoint(), light.getCoordinates())
 							/ light.getIntensity()));
-					primaryLightColor = calc < percent ? light.getColor() : Color.WHITE;
+					primaryLightColor = calc < percent ? light.getColor() : primaryLightColor;
 					percent = calc < percent ? calc : percent;
 				}
 				t.setColor(ColorPalette.darken(ColorPalette.lightFilter(t.getColor(), primaryLightColor), percent));
+				t.setSourceID(face.getSourceID());
+				if (MathUtils.isInside(t.getPoints(), mousePoint)) {
+					boolean exists = false;
+					for (int i = 0; i < outlineBuffers.size(); i++) {
+						if (outlineBuffers.get(i).getSourceID() == face.getSourceID())
+							exists = true;
+					}
+					if (!exists)
+						outlineBuffers.add(new OutlineBuffer(face.getSourceID()));
+				}
 				triangles.add(t);
 			}
 		}
+		renderProfiler.stop();
+		outlineProfiler.start();
+		outer: for (int i = 0; i < lastOutlineIDs.length; i++) {
+			for (OutlineBuffer buffer : outlineBuffers) {
+				if (buffer.getSourceID() == lastOutlineIDs[i])
+					continue outer;
+			}
+			Environment.getObjectForID(lastOutlineIDs[i]).setOutline(null);
+		}
+		lastOutlineIDs = new int[outlineBuffers.size()];
+		for (int i = 0; i < outlineBuffers.size(); i++) {
+			lastOutlineIDs[i] = outlineBuffers.get(i).getSourceID();
+			for (int j = 0; j < triangles.size(); j++) {
+				if (triangles.get(j).getSourceID() == outlineBuffers.get(i).getSourceID()) {
+					outlineBuffers.get(i).addPoints(triangles.get(j).getPoints());
+				}
+			}
+			Environment.getObjectForID(outlineBuffers.get(i).getSourceID()).setOutline(outlineBuffers.get(i).createOutline());
+		}
+		outlineProfiler.stop();
 		synchronized (triangleList) {
 			triangleList = triangles;
+		}
+	}
+
+	@Override
+	public void run() {
+		TimeProfiler rmMainProfiler = new TimeProfiler("RM Main", TimeProfiler.TYPE_MILLI, 1000);
+		while (!kill) {
+			rmMainProfiler.start();
+			Camera.getSingleton().updateCoordinates();
+			faceList = Environment.grabEnvironmentFaces();
+			renderTriangles();
+			try {
+				sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			rmMainProfiler.stop();
 		}
 	}
 
