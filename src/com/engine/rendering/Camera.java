@@ -110,8 +110,8 @@ public final class Camera {
 		return new Point2D((int) (screenCenter.getX() + getZoom() * temp * x),
 				(int) (screenCenter.getY() + getZoom() * temp * y));
 	}
-	
-	//This cannot be called by any thread other than RenderManager
+
+	// This cannot be called by any thread other than RenderManager
 	public void updateCoordinates() {
 		float r = ((1 / getZoom()) * 1000000);
 		float z = (float) (r * Math.sin(getRadianPhi()));

@@ -3,6 +3,8 @@ package com.engine.graphics;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
@@ -10,6 +12,7 @@ import javax.swing.JFrame;
 
 import com.engine.environment.Environment;
 import com.engine.environment.EnvironmentObject;
+import com.engine.environment.LightSource;
 import com.engine.io.MouseHandler;
 import com.engine.math.Point2D;
 import com.engine.math.Triangle;
@@ -35,6 +38,7 @@ public final class Engine extends JFrame {
 	private Engine() {
 		System.setProperty("sun.java2d.opengl", "true");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setTitle("Clown-Engine v3.2");
 		MouseHandler m = new MouseHandler();
 		this.addMouseMotionListener(m);
 		this.addMouseWheelListener(m);
@@ -52,24 +56,36 @@ public final class Engine extends JFrame {
 			g.drawString(strings[i], 9, (i * 10) + 40);
 		}
 	}
+	
+	private BufferedImage toCompatibleImage(BufferedImage image)
+	{
+		// obtain the current system graphical settings
+		GraphicsConfiguration gfx_config = GraphicsEnvironment.
+			getLocalGraphicsEnvironment().getDefaultScreenDevice().
+			getDefaultConfiguration();
 
-	// TODO TODO TODO
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.awt.Window#paint(java.awt.Graphics)
-	 * 
-	 * New plan! Instead of handling triangle creation at all in this method,
-	 * I've devised a new plan where a thread (or more) will constantly keep
-	 * handling triangle creation, and pushing the new triangles to an array
-	 * which is then grabbed when this paint method is called.
-	 * 
-	 * That way, at all times, a new array of triangles will be under
-	 * construction so that this method never has to wait for anything, and can
-	 * always focus entirely on drawing the triangles/other things.
-	 * 
-	 * [Edit] New plan is active, and works fine.
-	 */
+		/*
+		 * if image is already compatible and optimized for current system 
+		 * settings, simply return it
+		 */
+		if (image.getColorModel().equals(gfx_config.getColorModel()))
+			return image;
+
+		// image is not optimized, so create a new image that is
+		BufferedImage new_image = gfx_config.createCompatibleImage(
+				image.getWidth(), image.getHeight(), image.getTransparency());
+
+		// get the graphics context of the new image to draw the old image on
+		Graphics2D g2d = (Graphics2D) new_image.getGraphics();
+
+		// actually draw the image and dispose of context no longer needed
+		g2d.drawImage(image, 0, 0, null);
+		g2d.dispose();
+
+		// return the new optimized image
+		return new_image; 
+	}
+
 	@Override
 	public void paint(Graphics g) {
 		lastTime = System.nanoTime();
@@ -86,7 +102,13 @@ public final class Engine extends JFrame {
 		// TODO Only perform on scale change.
 		Camera.getSingleton()
 				.setScreenCenter(new Point2D(VideoSettings.getOutputWidth() / 2, VideoSettings.getOutputHeight() / 2));
-		Triangle[] triangles = RenderManager.getTriangles();
+		//Consider different ways to remove the actual drawing from this area, and only draw the image here.
+		Triangle[] triangles = new Triangle[0];
+		try {
+			triangles = RenderManager.getTriangles();
+		}catch (java.lang.NoClassDefFoundError e) {
+			System.exit(1);
+		}
 		graphics.setColor(Color.BLACK);
 		graphics.fillRect(0, 0, VideoSettings.getOutputWidth(), VideoSettings.getOutputHeight());
 		for (Triangle t : triangles) {
@@ -98,14 +120,20 @@ public final class Engine extends JFrame {
 			for (EnvironmentObject e : Environment.getObjectsAtCoordinate((int) MouseHandler.getMouseX(),
 					(int) MouseHandler.getMouseY())) {
 				if (e.getOutline() != null)
-						graphics.drawPolygon(e.getOutline().getXValues(), e.getOutline().getYValues(),
-								e.getOutline().getPoints().length);
+					graphics.drawPolygon(e.getOutline().getXValues(), e.getOutline().getYValues(),
+							e.getOutline().getPoints().length);
 			}
-		} catch (java.lang.NoClassDefFoundError e) { //Shouldn't ever happen unless there was a problem in Environment
+		} catch (java.lang.NoClassDefFoundError e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		drawDebugInfo(graphics, "FPS: " + ((int) fps), "CamPos: " + Camera.getSingleton().getCoordinates());
+		for (LightSource l : Environment.grabEnvironmentLights()) {
+			Point2D p = Camera.getSingleton().translatePoint3D(l.getCoordinates());
+			graphics.setColor(l.getColor());
+			graphics.fillRect(p.getX() - 2, p.getY() - 2, 4, 4);
+		}
+		drawDebugInfo(graphics, "FPS: " + ((int) fps), "CamPos: " + Camera.getSingleton().getCoordinates(),
+				"NOF: " + triangles.length);
 		g.drawImage(image, 0, 0, null);
 		// For fps capping
 		long sleepTime = (long) (((1000000000.0 / VideoSettings.getFramesPerSecondCap())

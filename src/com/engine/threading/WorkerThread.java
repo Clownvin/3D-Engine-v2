@@ -1,6 +1,6 @@
 package com.engine.threading;
 
-public final class WorkerThread extends Thread implements Runnable {
+public final class WorkerThread extends Thread {
 	private final ThreadPool threadPool;
 	private boolean destroy = false;
 	private ThreadTask task = null;

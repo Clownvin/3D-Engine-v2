@@ -25,12 +25,12 @@ public final class Triangle extends Polygon {
 			}
 		}
 	}
-	
+
 	public Triangle setSourceID(int sourceID) {
 		this.sourceID = sourceID;
 		return this;
 	}
-	
+
 	public int getSourceID() {
 		return sourceID;
 	}

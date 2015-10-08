@@ -17,7 +17,7 @@ public final class IDTagSystem {
 		}
 	}
 
-	private final CycleStack<IDTag> tags = new CycleStack<IDTag>();
+	private final CycleList<IDTag> tags = new CycleList<IDTag>();
 
 	public IDTagSystem(final int maxTags) {
 		tags.prepare(maxTags);

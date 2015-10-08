@@ -3,10 +3,7 @@ package com.engine.util;
 import java.util.ConcurrentModificationException;
 
 //Rewritten
-public class CycleStack<T> {
-
-	private static final int DEFAULT_CAPACITY = 10;
-
+public class CycleList<T> {
 	private static final Object[] EMPTY_ARRAYDATA = new Object[0];
 	private transient volatile Object[] arrayData;
 	private int takePointer = 0;
@@ -15,11 +12,11 @@ public class CycleStack<T> {
 	private int size = 0;
 	private volatile long modCount = 0L;
 
-	public CycleStack() {
-		this.arrayData = new Object[DEFAULT_CAPACITY];
+	public CycleList() {
+		this.arrayData = EMPTY_ARRAYDATA;
 	}
 
-	public CycleStack(int initialCapacity) {
+	public CycleList(int initialCapacity) {
 		if (initialCapacity > 0) {
 			this.arrayData = new Object[initialCapacity];
 		} else if (initialCapacity == 0) {
@@ -43,7 +40,7 @@ public class CycleStack<T> {
 
 	// Checks for concurrent modification.
 	private void checkForComodification() {
-		if (CycleStack.this.modCount != this.modCount)
+		if (CycleList.this.modCount != this.modCount)
 			throw new ConcurrentModificationException();
 	}
 
@@ -97,7 +94,7 @@ public class CycleStack<T> {
 		if (arrayData[takePointer] == null) {
 			if (hasAvailable()) {
 				if (takePointer != addPointer) {
-					throw new RuntimeException("overtake occured");
+					throw new RuntimeException("overtake occured, please report");
 				}
 				return null;
 			} else {

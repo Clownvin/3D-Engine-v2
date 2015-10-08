@@ -14,7 +14,6 @@
  * 
  */
 
-
 package com.engine.rendering;
 
 import java.awt.Color;
@@ -54,28 +53,28 @@ public final class RenderManager extends Thread {
 	public static void kill() {
 		kill = true;
 	}
+	
 
 	private RenderManager() {
-		// To prevent instantiation.
 		this.start();
 	}
-	
+
 	TimeProfiler outlineProfiler = new TimeProfiler("Outline", TimeProfiler.TYPE_NANO, 1000);
 	TimeProfiler renderProfiler = new TimeProfiler("Render", TimeProfiler.TYPE_NANO, 1000);
 
 	private void renderTriangles() {
 		Face[] layerFaces = sortByDistance(faceList, Camera.getSingleton().getCoordinates());
 		LightSource[] lights = Environment.grabEnvironmentLights();
-		Triangle t;
-		int sum;
-		float percent;
-		float calc;
-		float angle;
-		Color primaryLightColor;
 		ArrayList<Triangle> triangles = new ArrayList<Triangle>(faceList.length);
 		ArrayList<OutlineBuffer> outlineBuffers = new ArrayList<OutlineBuffer>();
-		renderProfiler.start();
+		Triangle t;
+		int sum;
+		double percent;
+		double calc;
+		double angle;
+		Color primaryLightColor;
 		Point2D mousePoint = new Point2D((int) MouseHandler.getMouseX(), (int) MouseHandler.getMouseY());
+		renderProfiler.start();
 		for (Face face : layerFaces) {
 			if (face == null || face.getPoints().length != 3)
 				continue;
@@ -93,19 +92,21 @@ public final class RenderManager extends Thread {
 			}
 			if ((sum < 0 || face.showBackFace())) {
 				t.setColor(face.getColor());
-				percent = 1.0f;
-				calc = 0.0f;
-				primaryLightColor = Color.WHITE;
-				for (LightSource light : lights) {
-					angle = MathUtils.calculateAngleRelativeToNormal(face, light.getCoordinates(),
-							MathUtils.calculateSurfaceNormal(face));
-					calc = ((angle / 180.0f) * (MathUtils.distance(face.getAveragePoint(), light.getCoordinates())
-							/ light.getIntensity()));
-					primaryLightColor = calc < percent ? light.getColor() : primaryLightColor;
-					percent = calc < percent ? calc : percent;
+				if (lights.length > 0) {
+					percent = 1.0f;
+					calc = 0.0f;
+					primaryLightColor = Color.WHITE;
+					for (LightSource light : lights) {
+						angle = MathUtils.calculateAngleRelativeToNormal(face, light.getCoordinates(),
+								MathUtils.calculateSurfaceNormal(face));
+						calc = ((angle / 180.0f) * (MathUtils.distance(face.getAveragePoint(), light.getCoordinates())
+								/ light.getIntensity()));
+						primaryLightColor = calc < percent ? light.getColor() : primaryLightColor;
+						percent = calc < percent ? calc : percent;
+					}
+					t.setColor(ColorPalette.darken(ColorPalette.lightFilter(t.getColor(), primaryLightColor), percent));
+					t.setSourceID(face.getSourceID());
 				}
-				t.setColor(ColorPalette.darken(ColorPalette.lightFilter(t.getColor(), primaryLightColor), percent));
-				t.setSourceID(face.getSourceID());
 				if (MathUtils.isInside(t.getPoints(), mousePoint)) {
 					boolean exists = false;
 					for (int i = 0; i < outlineBuffers.size(); i++) {
@@ -119,6 +120,7 @@ public final class RenderManager extends Thread {
 			}
 		}
 		renderProfiler.stop();
+		
 		outlineProfiler.start();
 		outer: for (int i = 0; i < lastOutlineIDs.length; i++) {
 			for (OutlineBuffer buffer : outlineBuffers) {
@@ -135,7 +137,8 @@ public final class RenderManager extends Thread {
 					outlineBuffers.get(i).addPoints(triangles.get(j).getPoints());
 				}
 			}
-			Environment.getObjectForID(outlineBuffers.get(i).getSourceID()).setOutline(outlineBuffers.get(i).createOutline());
+			Environment.getObjectForID(outlineBuffers.get(i).getSourceID())
+					.setOutline(outlineBuffers.get(i).createOutline());
 		}
 		outlineProfiler.stop();
 		synchronized (triangleList) {
@@ -151,11 +154,6 @@ public final class RenderManager extends Thread {
 			Camera.getSingleton().updateCoordinates();
 			faceList = Environment.grabEnvironmentFaces();
 			renderTriangles();
-			try {
-				sleep(1);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 			rmMainProfiler.stop();
 		}
 	}
@@ -173,3 +171,7 @@ public final class RenderManager extends Thread {
 		return faces;
 	}
 }
+
+/*
+ * 
+		*/

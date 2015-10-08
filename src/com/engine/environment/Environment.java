@@ -12,7 +12,7 @@ import com.engine.util.IDTagSystem;
 
 //TODO add Scenes, and create a map
 public final class Environment {
-	private static final int MAX_ENVIRONMENT_OBJECTS = 20000;
+	private static final int MAX_ENVIRONMENT_OBJECTS = 2000000;
 	private static final IDTagSystem TAGGER = new IDTagSystem(MAX_ENVIRONMENT_OBJECTS);
 	private static final ArrayList<EnvironmentObject> OBJECTS = new ArrayList<EnvironmentObject>();
 	private static final ArrayList<LightSource> LIGHTS = new ArrayList<LightSource>();
@@ -45,13 +45,13 @@ public final class Environment {
 		}
 		throw new NullPointerException("no object in object list with id " + id);
 	}
-	
+
 	public static EnvironmentObject getObjectAtIndex(int index) {
 		if (index < 0 || index >= OBJECTS.size())
-			throw new ArrayIndexOutOfBoundsException("index "+index+" is out of bounds");
+			throw new ArrayIndexOutOfBoundsException("index " + index + " is out of bounds");
 		return OBJECTS.get(index);
 	}
-	
+
 	public static int getObjectListSize() {
 		return OBJECTS.size();
 	}
@@ -69,21 +69,31 @@ public final class Environment {
 
 	private Environment() {
 		/*
-		 * This section wont exist when compiled into libraries.
+		 * This contents of this block shouldn't exist when compiled to library;
 		 */
-		LightSource light1 = new LightSource(new Point3D(0, 0, 100), 50);
-		light1.setColor(Color.WHITE);
-		LIGHTS.add(light1);
-		LightSource light2 = new LightSource(new Point3D(100, 100, 50), 30);
-		light2.setColor(Color.GREEN);
-		LIGHTS.add(light2);
-		for (int x = -30; x < 30; x++) {
-			for (int y = -30; y < 30; y++) {
+//		 LightSource light1 = new LightSource(new Point3D(0, 0, 200), 25);
+//		 light1.setColor(Color.WHITE);
+//		 LIGHTS.add(light1);
+		 LightSource light2 = new LightSource(new Point3D(100, 100, 100), 50);
+		 light2.setColor(Color.GREEN);
+		 LIGHTS.add(light2);
+		 LightSource light3 = new LightSource(new Point3D(100, -100, 100),
+		 50);
+		 light3.setColor(Color.RED);
+		 LIGHTS.add(light3);
+		 LightSource light4 = new LightSource(new Point3D(-100, 100, 100),
+		 50);
+		 light4.setColor(Color.CYAN);
+		 LIGHTS.add(light4);
+		 LightSource light5 = new LightSource(new Point3D(-100, -100, 100),
+		 50);
+		 light5.setColor(Color.YELLOW);
+		 LIGHTS.add(light5);
+		for (int x = -10; x < 10; x++) {
+			for (int y = -10; y < 10; y++) {
 				OBJECTS.add(new EnvironmentObject(new Point3D(x * 10, y * 10, 0), 1, TAGGER.getTag()));
 			}
 		}
-		OBJECTS.add(new EnvironmentObject(new Point3D(50, 50, 50), 2, TAGGER.getTag()));
-		System.out.println(OBJECTS.size());
-		// To prevent instantiation
+		OBJECTS.add(new EnvironmentObject(new Point3D(0, 0, 50), 2, TAGGER.getTag()));
 	}
 }

@@ -39,7 +39,7 @@ public final class FileIO {
 
 	// TODO revise so len is added in writeFile, not as a convention required by
 	// FMWs
-	public static <T extends FileIOFormatted<T>> T readFile(T template, String fileName) {
+	public static <T extends FileIOFormatted<T>> T readFile(T template, String fileName) throws IOException {
 		if (template == null)
 			throw new IllegalArgumentException("Template must be a valid, instantiated object of the desired type.");
 		File file = new File(template.getFileType().getPath() + fileName + template.getFileType().getExtension());
@@ -58,10 +58,11 @@ public final class FileIO {
 				in.close();
 				return template.fromBytes(bytes);
 			} catch (IOException e) {
-				e.printStackTrace();
+				throw e;
 			}
+		} else {
+			throw new IOException("file does not exist or is directory");
 		}
-		return null;
 	}
 
 	// TODO Document

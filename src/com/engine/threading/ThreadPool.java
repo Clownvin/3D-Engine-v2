@@ -1,11 +1,11 @@
 package com.engine.threading;
 
-import com.engine.util.CycleStack;
+import com.engine.util.CycleList;
 
 public final class ThreadPool extends Thread implements Runnable {
 	private static final int DEFAULT_WORKERTHREADS_LENGTH = 100;
 	private static WorkerThread[] workerThreads = new WorkerThread[DEFAULT_WORKERTHREADS_LENGTH];
-	private static final CycleStack<ThreadTask> queuedTasks = new CycleStack<ThreadTask>(10000);
+	private static final CycleList<ThreadTask> queuedTasks = new CycleList<ThreadTask>(10000);
 	private static final ThreadPool SINGLETON = new ThreadPool();
 
 	static {
@@ -26,7 +26,7 @@ public final class ThreadPool extends Thread implements Runnable {
 
 	public static ThreadTask getNextTask() {
 		synchronized (queuedTasks) {
-			if (!hasTask()) 
+			if (!hasTask())
 				return null;
 			return queuedTasks.removeNext();
 		}
