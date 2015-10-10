@@ -85,9 +85,9 @@ public final class MathUtils {
 		Point3D[][] points = new Point3D[(int) steps][(int) steps];
 		int idx1 = 0;
 		int idx2 = 0;
-		for (float theta = 0; theta < (2 * Math.PI) - step; theta += step) {
+		for (float theta = 0; theta < (2 * Math.PI) - step + .01; theta += step) {
 			idx1 = 0;
-			for (float phi = 0; phi < (2 * Math.PI) - step; phi += step) {
+			for (float phi = 0; phi < (2 * Math.PI) - step + .01; phi += step) {
 				points[idx2][idx1++] = new Point3D((float) (Math.cos(phi) * Math.sin(theta) * r),
 						(float) (Math.sin(phi) * Math.sin(theta) * r), ((float) Math.cos(theta) * r) + z);
 			}

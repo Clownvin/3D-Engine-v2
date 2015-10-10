@@ -13,12 +13,14 @@ import javax.swing.JFrame;
 import com.engine.environment.Environment;
 import com.engine.environment.EnvironmentObject;
 import com.engine.environment.LightSource;
+import com.engine.io.KeyboardHandler;
 import com.engine.io.MouseHandler;
 import com.engine.math.Point2D;
 import com.engine.math.Triangle;
 import com.engine.rendering.Camera;
 import com.engine.rendering.RenderManager;
 import com.engine.rendering.VideoSettings;
+import com.engine.util.ColorPalette;
 
 public final class Engine extends JFrame {
 	/**
@@ -43,6 +45,7 @@ public final class Engine extends JFrame {
 		this.addMouseMotionListener(m);
 		this.addMouseWheelListener(m);
 		this.addMouseListener(m);
+		this.addKeyListener(new KeyboardHandler());
 		// To prevent instantiation.
 	}
 
@@ -131,6 +134,8 @@ public final class Engine extends JFrame {
 			Point2D p = Camera.getSingleton().translatePoint3D(l.getCoordinates());
 			graphics.setColor(l.getColor());
 			graphics.fillRect(p.getX() - 2, p.getY() - 2, 4, 4);
+			graphics.setColor(Color.BLACK);
+			graphics.drawRect(p.getX() - 3, p.getY() - 3, 6, 6);
 		}
 		drawDebugInfo(graphics, "FPS: " + ((int) fps), "CamPos: " + Camera.getSingleton().getCoordinates(),
 				"NOF: " + triangles.length);

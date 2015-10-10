@@ -56,12 +56,14 @@ public final class RenderManager extends Thread {
 	
 
 	private RenderManager() {
+		this.setPriority(MAX_PRIORITY);
 		this.start();
 	}
 
 	TimeProfiler outlineProfiler = new TimeProfiler("Outline", TimeProfiler.TYPE_NANO, 1000);
 	TimeProfiler renderProfiler = new TimeProfiler("Render", TimeProfiler.TYPE_NANO, 1000);
-
+	
+	
 	private void renderTriangles() {
 		Face[] layerFaces = sortByDistance(faceList, Camera.getSingleton().getCoordinates());
 		LightSource[] lights = Environment.grabEnvironmentLights();
@@ -70,9 +72,7 @@ public final class RenderManager extends Thread {
 		Triangle t;
 		int sum;
 		double percent;
-		double calc;
 		double angle;
-		Color primaryLightColor;
 		Point2D mousePoint = new Point2D((int) MouseHandler.getMouseX(), (int) MouseHandler.getMouseY());
 		renderProfiler.start();
 		for (Face face : layerFaces) {
@@ -93,18 +93,20 @@ public final class RenderManager extends Thread {
 			if ((sum < 0 || face.showBackFace())) {
 				t.setColor(face.getColor());
 				if (lights.length > 0) {
+					Color[] c = new Color[lights.length];
+					float[] p = new float[lights.length];
+					int idx = 0;
 					percent = 1.0f;
-					calc = 0.0f;
-					primaryLightColor = Color.WHITE;
 					for (LightSource light : lights) {
 						angle = MathUtils.calculateAngleRelativeToNormal(face, light.getCoordinates(),
 								MathUtils.calculateSurfaceNormal(face));
-						calc = ((angle / 180.0f) * (MathUtils.distance(face.getAveragePoint(), light.getCoordinates())
+						p[idx] = (float) ((angle / 180.0f) * (MathUtils.distance(face.getAveragePoint(), light.getCoordinates())
 								/ light.getIntensity()));
-						primaryLightColor = calc < percent ? light.getColor() : primaryLightColor;
-						percent = calc < percent ? calc : percent;
+						percent = p[idx] < percent ? p[idx] : percent;
+						c[idx++] = light.getColor();
+						
 					}
-					t.setColor(ColorPalette.darken(ColorPalette.lightFilter(t.getColor(), primaryLightColor), percent));
+					t.setColor(ColorPalette.darken(ColorPalette.lightFilter(t.getColor(), ColorPalette.mixByPercent(c, p)), percent));
 					t.setSourceID(face.getSourceID());
 				}
 				if (MathUtils.isInside(t.getPoints(), mousePoint)) {
@@ -127,7 +129,9 @@ public final class RenderManager extends Thread {
 				if (buffer.getSourceID() == lastOutlineIDs[i])
 					continue outer;
 			}
+			try {
 			Environment.getObjectForID(lastOutlineIDs[i]).setOutline(null);
+			} catch (NullPointerException e) {};
 		}
 		lastOutlineIDs = new int[outlineBuffers.size()];
 		for (int i = 0; i < outlineBuffers.size(); i++) {
@@ -137,8 +141,12 @@ public final class RenderManager extends Thread {
 					outlineBuffers.get(i).addPoints(triangles.get(j).getPoints());
 				}
 			}
+			try {
 			Environment.getObjectForID(outlineBuffers.get(i).getSourceID())
 					.setOutline(outlineBuffers.get(i).createOutline());
+			} catch (NullPointerException e) {
+				
+			}
 		}
 		outlineProfiler.stop();
 		synchronized (triangleList) {

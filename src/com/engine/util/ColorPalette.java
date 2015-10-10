@@ -42,12 +42,49 @@ public enum ColorPalette {
 	}
 
 	public static Color lightFilter(Color original, Color light) {
-		float rPercent = original.getRed() / 0xFF;
-		float gPercent = original.getGreen() / 0xFF;
-		float bPercent = original.getBlue() / 0xFF;
-		return new Color((int) rPercent * light.getRed(), (int) gPercent * light.getGreen(),
-				(int) bPercent * light.getBlue());
+		float rPercent = (float) original.getRed() / (float) 0xFF;
+		float gPercent = (float) original.getGreen() / (float) 0xFF;
+		float bPercent = (float) original.getBlue() / (float) 0xFF;
+		return new Color((int) (rPercent * (float) light.getRed()), (int) (gPercent * (float) light.getGreen()),
+				(int) (bPercent * (float) light.getBlue()));
 
+	}
+	
+	public static Color mixByPercent(Color[] colors, float[] percents) {
+		float totalPercent = 0.0f;
+		for (int i = 0; i < percents.length; i++) {
+			if (percents[i] > 1.0f) {
+				percents[i] = 1.0f;
+			}
+			totalPercent += (1.0f - percents[i]);
+		}
+		int r = 0;
+		int g = 0;
+		int b = 0;
+		for (int i = 0; i < colors.length; i++) {
+			r += (int) (colors[i].getRed() * ( (1.0f- percents[i]) / totalPercent));
+			g += (int) (colors[i].getGreen() * ((1.0f- percents[i]) / totalPercent));
+			b += (int) (colors[i].getBlue() * ((1.0f- percents[i]) / totalPercent));
+		}
+		if (r > 255) {
+			r = 255;
+		}
+		if (g > 255) {
+			g = 255;
+		}
+		if (b > 255) {
+			b = 255;
+		}
+		if (r < 0) {
+			r = 0;
+		}
+		if (g < 0) {
+			g = 0;
+		}
+		if (b < 0) {
+			b = 0;
+		}
+		return new Color(r, g, b);
 	}
 
 	public static Color mixColors(Color color1, Color color2) {

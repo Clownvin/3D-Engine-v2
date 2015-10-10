@@ -1,5 +1,6 @@
 package com.engine.rendering;
 
+import com.engine.io.KeyboardHandler;
 import com.engine.math.Point2D;
 import com.engine.math.Point3D;
 
@@ -104,6 +105,7 @@ public final class Camera {
 	}
 
 	public Point2D translatePoint3D(Point3D point) {
+		point = point.setZ(point.getZ() - 37).setX(point.getX() + KeyboardHandler.x * 10).setY(point.getY() + KeyboardHandler.y * 10);
 		double x = screenPosition.x + point.getX() * ct - point.getY() * st;
 		double y = screenPosition.y + point.getX() * stsp + point.getY() * ctsp + point.getZ() * cp;
 		double temp = viewAngle.z / (screenPosition.z + point.getX() * stcp + point.getY() * ctcp - point.getZ() * sp);

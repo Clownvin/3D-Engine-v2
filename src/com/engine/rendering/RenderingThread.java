@@ -11,6 +11,7 @@ import com.engine.math.Triangle;
 import com.engine.util.ColorPalette;
 
 public class RenderingThread extends Thread {
+	private static volatile int counter = 0;
 	private volatile Face[] faceArray;
 	private volatile ArrayList<Triangle> triangles;
 	private volatile LightSource[] lights;
@@ -46,11 +47,15 @@ public class RenderingThread extends Thread {
 	
 	@Override
 	public void run() {
+		this.setPriority(MAX_PRIORITY);
 		while (!kill) {
-			finished = false;
 			try {
-				this.wait();
+				synchronized (this) {
+					this.wait();
+				}
 			} catch (InterruptedException e) {}
+			finished = false;
+			int thisCount = counter++;
 			for (Face face : faceArray) {
 				if (face == null || face.getPoints().length != 3)
 					continue;
@@ -95,10 +100,10 @@ public class RenderingThread extends Thread {
 					}*/
 					triangles.add(t);
 				}
-				finished = true;
-				synchronized (renderingManager) {
-					renderingManager.notifyAll();
-				}
+			}
+			finished = true;
+			synchronized (renderingManager) {
+				renderingManager.notifyAll();
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package com.engine.environment;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import com.engine.environment.map.MapGenerator;
 import com.engine.math.Face;
 import com.engine.math.MathUtils;
 import com.engine.math.Point2D;
@@ -17,13 +18,18 @@ public final class Environment {
 	private static final ArrayList<EnvironmentObject> OBJECTS = new ArrayList<EnvironmentObject>();
 	private static final ArrayList<LightSource> LIGHTS = new ArrayList<LightSource>();
 	private static final Environment SINGLETON = new Environment();
+	private static final Face[] mapFaces = MapGenerator.generateBaseMap(200, 200, 10.0f);
 
 	public static Environment getSingleton() {
 		return SINGLETON;
 	}
 
 	public static Face[] grabEnvironmentFaces() {
+		
 		ArrayList<Face> faceList = new ArrayList<Face>(OBJECTS.size() * 10);
+		for (int i = 0; i < mapFaces.length; i++) {
+			faceList.add(mapFaces[i]);
+		}
 		for (int i = 0; i < OBJECTS.size(); i++) {
 			Face[] faces = ModelManager.getModel(OBJECTS.get(i).getModelID()).getFaces();
 			for (int j = 0; j < faces.length; j++) {
@@ -71,29 +77,24 @@ public final class Environment {
 		/*
 		 * This contents of this block shouldn't exist when compiled to library;
 		 */
-//		 LightSource light1 = new LightSource(new Point3D(0, 0, 200), 25);
-//		 light1.setColor(Color.WHITE);
-//		 LIGHTS.add(light1);
-		 LightSource light2 = new LightSource(new Point3D(100, 100, 100), 50);
+		 LightSource light1 = new LightSource(new Point3D(0, 0, 100), 300);
+		 light1.setColor(new Color(((int) (0xFF * 1.0f) << 16) | ((int) (0xFF * 0.9f) << 8) | ((int) (0xFF * 0.9f))));
+		 LIGHTS.add(light1);
+		 LightSource light2 = new LightSource(new Point3D(500, 500, 400), 300);
 		 light2.setColor(Color.GREEN);
 		 LIGHTS.add(light2);
-		 LightSource light3 = new LightSource(new Point3D(100, -100, 100),
-		 50);
+		 LightSource light3 = new LightSource(new Point3D(500, -500, 400),
+		 300);
 		 light3.setColor(Color.RED);
 		 LIGHTS.add(light3);
-		 LightSource light4 = new LightSource(new Point3D(-100, 100, 100),
-		 50);
-		 light4.setColor(Color.CYAN);
+		 LightSource light4 = new LightSource(new Point3D(-500, 500, 400),
+		 300);
+		 light4.setColor(Color.BLUE);
 		 LIGHTS.add(light4);
-		 LightSource light5 = new LightSource(new Point3D(-100, -100, 100),
-		 50);
-		 light5.setColor(Color.YELLOW);
+		 LightSource light5 = new LightSource(new Point3D(-500, -500, 400),
+		 300);
+		 light5.setColor(Color.MAGENTA);
 		 LIGHTS.add(light5);
-		for (int x = -10; x < 10; x++) {
-			for (int y = -10; y < 10; y++) {
-				OBJECTS.add(new EnvironmentObject(new Point3D(x * 10, y * 10, 0), 1, TAGGER.getTag()));
-			}
-		}
-		OBJECTS.add(new EnvironmentObject(new Point3D(0, 0, 50), 2, TAGGER.getTag()));
+//		 OBJECTS.add(new EnvironmentObject(new Point3D(0, 0, 100), 2, TAGGER.getTag()));
 	}
 }
