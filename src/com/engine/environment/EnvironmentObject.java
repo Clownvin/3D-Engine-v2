@@ -17,21 +17,20 @@ public final class EnvironmentObject {
 		this.idTag = idTag;
 	}
 
-	public Outline getOutline() {
-		return outline;
-	}
-
-	public EnvironmentObject setOutline(Outline outline) {
-		this.outline = outline;
-		return this;
-	}
-
 	public Point3D getCoordinates() {
 		return coordinates;
 	}
 
+	public int getID() {
+		return idTag.getID();
+	}
+
 	public int getModelID() {
 		return modelID;
+	}
+
+	public Outline getOutline() {
+		return outline;
 	}
 
 	public float getRotation() {
@@ -46,11 +45,12 @@ public final class EnvironmentObject {
 		this.modelID = modelID;
 	}
 
-	public void setRotation(float rotation) {
-		this.rotation = rotation;
+	public EnvironmentObject setOutline(Outline outline) {
+		this.outline = outline;
+		return this;
 	}
 
-	public int getID() {
-		return idTag.getID();
+	public void setRotation(float rotation) {
+		this.rotation = rotation;
 	}
 }

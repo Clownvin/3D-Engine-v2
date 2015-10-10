@@ -107,8 +107,8 @@ public final class MathUtils {
 	}
 
 	public static double cross(Point2D p1, Point2D p2, Point2D p3) {
-		return (double) (((p2.getX() - p1.getX()) * (p3.getY() - p1.getY()))
-				- ((p2.getY() - p1.getY()) * (p3.getX() - p1.getX())));
+		return ((p2.getX() - p1.getX()) * (p3.getY() - p1.getY()))
+				- ((p2.getY() - p1.getY()) * (p3.getX() - p1.getX()));
 	}
 
 	public static int distance(Point3D p1, Point3D p2) {

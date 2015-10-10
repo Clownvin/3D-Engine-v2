@@ -26,15 +26,6 @@ public final class Triangle extends Polygon {
 		}
 	}
 
-	public Triangle setSourceID(int sourceID) {
-		this.sourceID = sourceID;
-		return this;
-	}
-
-	public int getSourceID() {
-		return sourceID;
-	}
-
 	public Color getColor() {
 		return color;
 	}
@@ -55,10 +46,14 @@ public final class Triangle extends Polygon {
 		return ly;
 	}
 
+	public int getSourceID() {
+		return sourceID;
+	}
+
 	public int[] getXValues() {
 		int[] x = new int[points.length];
 		for (int i = 0; i < points.length; i++) {
-			x[i] = (int) points[i].getX();
+			x[i] = points[i].getX();
 		}
 		return x;
 	}
@@ -66,12 +61,17 @@ public final class Triangle extends Polygon {
 	public int[] getYValues() {
 		int[] y = new int[points.length];
 		for (int i = 0; i < points.length; i++) {
-			y[i] = (int) points[i].getY();
+			y[i] = points[i].getY();
 		}
 		return y;
 	}
 
 	public void setColor(Color color) {
 		this.color = color;
+	}
+
+	public Triangle setSourceID(int sourceID) {
+		this.sourceID = sourceID;
+		return this;
 	}
 }

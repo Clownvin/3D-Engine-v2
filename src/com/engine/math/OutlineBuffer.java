@@ -10,8 +10,9 @@ public final class OutlineBuffer {
 		this.sourceID = sourceID;
 	}
 
-	public int getSourceID() {
-		return sourceID;
+	public OutlineBuffer addPoint(Point2D point) {
+		points.add(point);
+		return this;
 	}
 
 	public OutlineBuffer addPoints(Point2D[] points) {
@@ -21,12 +22,11 @@ public final class OutlineBuffer {
 		return this;
 	}
 
-	public OutlineBuffer addPoint(Point2D point) {
-		points.add(point);
-		return this;
-	}
-
 	public Outline createOutline() {
 		return new Outline(MathUtils.convexHull(points.toArray(new Point2D[points.size()])).getPoints(), sourceID);
+	}
+
+	public int getSourceID() {
+		return sourceID;
 	}
 }

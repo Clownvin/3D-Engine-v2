@@ -19,15 +19,6 @@ public final class Face implements ByteFormatted<Face> {
 	private final Point3D averagePoint;
 	private int sourceID = -1;
 
-	public Face setSourceID(int id) {
-		sourceID = id;
-		return this;
-	}
-
-	public int getSourceID() {
-		return sourceID;
-	}
-
 	private Face() {
 		color = null;
 		averagePoint = null;
@@ -97,6 +88,15 @@ public final class Face implements ByteFormatted<Face> {
 
 	public Point3D[] getPoints() {
 		return points;
+	}
+
+	public int getSourceID() {
+		return sourceID;
+	}
+
+	public Face setSourceID(int id) {
+		sourceID = id;
+		return this;
 	}
 
 	public boolean showBackFace() {

@@ -8,9 +8,6 @@ import com.engine.math.Face;
 import com.engine.math.MathUtils;
 import com.engine.math.Point3D;
 import com.engine.models.Model3D;
-import com.engine.util.IDTagSystem;
-import com.engine.util.Util;
-import com.engine.util.IDTagSystem.IDTag;
 
 public class Tester {
 	public static void main(String[] args) throws InterruptedException {

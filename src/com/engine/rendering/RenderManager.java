@@ -53,17 +53,15 @@ public final class RenderManager extends Thread {
 	public static void kill() {
 		kill = true;
 	}
-	
 
+	TimeProfiler outlineProfiler = new TimeProfiler("Outline", TimeProfiler.TYPE_NANO, 1000);
+
+	TimeProfiler renderProfiler = new TimeProfiler("Render", TimeProfiler.TYPE_NANO, 1000);
 	private RenderManager() {
 		this.setPriority(MAX_PRIORITY);
 		this.start();
 	}
 
-	TimeProfiler outlineProfiler = new TimeProfiler("Outline", TimeProfiler.TYPE_NANO, 1000);
-	TimeProfiler renderProfiler = new TimeProfiler("Render", TimeProfiler.TYPE_NANO, 1000);
-	
-	
 	private void renderTriangles() {
 		Face[] layerFaces = sortByDistance(faceList, Camera.getSingleton().getCoordinates());
 		LightSource[] lights = Environment.grabEnvironmentLights();
@@ -100,13 +98,15 @@ public final class RenderManager extends Thread {
 					for (LightSource light : lights) {
 						angle = MathUtils.calculateAngleRelativeToNormal(face, light.getCoordinates(),
 								MathUtils.calculateSurfaceNormal(face));
-						p[idx] = (float) ((angle / 180.0f) * (MathUtils.distance(face.getAveragePoint(), light.getCoordinates())
-								/ light.getIntensity()));
+						p[idx] = (float) ((angle / 180.0f)
+								* (MathUtils.distance(face.getAveragePoint(), light.getCoordinates())
+										/ light.getIntensity()));
 						percent = p[idx] < percent ? p[idx] : percent;
 						c[idx++] = light.getColor();
-						
+
 					}
-					t.setColor(ColorPalette.darken(ColorPalette.lightFilter(t.getColor(), ColorPalette.mixByPercent(c, p)), percent));
+					t.setColor(ColorPalette
+							.darken(ColorPalette.lightFilter(t.getColor(), ColorPalette.mixByPercent(c, p)), percent));
 					t.setSourceID(face.getSourceID());
 				}
 				if (MathUtils.isInside(t.getPoints(), mousePoint)) {
@@ -122,7 +122,7 @@ public final class RenderManager extends Thread {
 			}
 		}
 		renderProfiler.stop();
-		
+
 		outlineProfiler.start();
 		outer: for (int i = 0; i < lastOutlineIDs.length; i++) {
 			for (OutlineBuffer buffer : outlineBuffers) {
@@ -130,8 +130,10 @@ public final class RenderManager extends Thread {
 					continue outer;
 			}
 			try {
-			Environment.getObjectForID(lastOutlineIDs[i]).setOutline(null);
-			} catch (NullPointerException e) {};
+				Environment.getObjectForID(lastOutlineIDs[i]).setOutline(null);
+			} catch (NullPointerException e) {
+			}
+			;
 		}
 		lastOutlineIDs = new int[outlineBuffers.size()];
 		for (int i = 0; i < outlineBuffers.size(); i++) {
@@ -142,10 +144,10 @@ public final class RenderManager extends Thread {
 				}
 			}
 			try {
-			Environment.getObjectForID(outlineBuffers.get(i).getSourceID())
-					.setOutline(outlineBuffers.get(i).createOutline());
+				Environment.getObjectForID(outlineBuffers.get(i).getSourceID())
+						.setOutline(outlineBuffers.get(i).createOutline());
 			} catch (NullPointerException e) {
-				
+
 			}
 		}
 		outlineProfiler.stop();

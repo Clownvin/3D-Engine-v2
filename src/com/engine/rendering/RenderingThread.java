@@ -18,33 +18,24 @@ public class RenderingThread extends Thread {
 	private volatile boolean finished = false;
 	private volatile boolean kill = false;
 	private final RenderManager renderingManager;
-	
+
 	public RenderingThread(RenderManager renderingManager) {
 		this.renderingManager = renderingManager;
 		this.start();
 	}
-	
-	public synchronized boolean isFinished() {
-		return finished;
-	}
-	
+
 	public synchronized ArrayList<Triangle> getTriangles() {
 		return triangles;
 	}
-	
-	public synchronized void startRender(Face[] faceArray, LightSource[] lights) {
-		this.faceArray = faceArray;
-		this.lights = lights;
-		triangles = new ArrayList<Triangle>(faceArray.length);
-		synchronized (this) {
-			this.notifyAll();
-		}
+
+	public synchronized boolean isFinished() {
+		return finished;
 	}
-	
+
 	public synchronized void kill() {
 		kill = true;
 	}
-	
+
 	@Override
 	public void run() {
 		this.setPriority(MAX_PRIORITY);
@@ -53,7 +44,8 @@ public class RenderingThread extends Thread {
 				synchronized (this) {
 					this.wait();
 				}
-			} catch (InterruptedException e) {}
+			} catch (InterruptedException e) {
+			}
 			finished = false;
 			int thisCount = counter++;
 			for (Face face : faceArray) {
@@ -80,24 +72,25 @@ public class RenderingThread extends Thread {
 						for (LightSource light : lights) {
 							double angle = MathUtils.calculateAngleRelativeToNormal(face, light.getCoordinates(),
 									MathUtils.calculateSurfaceNormal(face));
-							calc = ((angle / 180.0f) * (MathUtils.distance(face.getAveragePoint(), light.getCoordinates())
-									/ light.getIntensity()));
+							calc = ((angle / 180.0f)
+									* (MathUtils.distance(face.getAveragePoint(), light.getCoordinates())
+											/ light.getIntensity()));
 							primaryLightColor = calc < percent ? light.getColor() : primaryLightColor;
 							percent = calc < percent ? calc : percent;
 						}
-						t.setColor(ColorPalette.darken(ColorPalette.lightFilter(t.getColor(), primaryLightColor), percent));
+						t.setColor(ColorPalette.darken(ColorPalette.lightFilter(t.getColor(), primaryLightColor),
+								percent));
 						t.setSourceID(face.getSourceID());
 					}
 					/*
-					if (MathUtils.isInside(t.getPoints(), mousePoint)) {
-						boolean exists = false;
-						for (int i = 0; i < outlineBuffers.size(); i++) {
-							if (outlineBuffers.get(i).getSourceID() == face.getSourceID())
-								exists = true;
-						}
-						if (!exists)
-							outlineBuffers.add(new OutlineBuffer(face.getSourceID()));
-					}*/
+					 * if (MathUtils.isInside(t.getPoints(), mousePoint)) {
+					 * boolean exists = false; for (int i = 0; i <
+					 * outlineBuffers.size(); i++) { if
+					 * (outlineBuffers.get(i).getSourceID() ==
+					 * face.getSourceID()) exists = true; } if (!exists)
+					 * outlineBuffers.add(new
+					 * OutlineBuffer(face.getSourceID())); }
+					 */
 					triangles.add(t);
 				}
 			}
@@ -105,6 +98,15 @@ public class RenderingThread extends Thread {
 			synchronized (renderingManager) {
 				renderingManager.notifyAll();
 			}
+		}
+	}
+
+	public synchronized void startRender(Face[] faceArray, LightSource[] lights) {
+		this.faceArray = faceArray;
+		this.lights = lights;
+		triangles = new ArrayList<Triangle>(faceArray.length);
+		synchronized (this) {
+			this.notifyAll();
 		}
 	}
 }

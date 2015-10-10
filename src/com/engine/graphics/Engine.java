@@ -20,7 +20,6 @@ import com.engine.math.Triangle;
 import com.engine.rendering.Camera;
 import com.engine.rendering.RenderManager;
 import com.engine.rendering.VideoSettings;
-import com.engine.util.ColorPalette;
 
 public final class Engine extends JFrame {
 	/**
@@ -59,35 +58,6 @@ public final class Engine extends JFrame {
 			g.drawString(strings[i], 9, (i * 10) + 40);
 		}
 	}
-	
-	private BufferedImage toCompatibleImage(BufferedImage image)
-	{
-		// obtain the current system graphical settings
-		GraphicsConfiguration gfx_config = GraphicsEnvironment.
-			getLocalGraphicsEnvironment().getDefaultScreenDevice().
-			getDefaultConfiguration();
-
-		/*
-		 * if image is already compatible and optimized for current system 
-		 * settings, simply return it
-		 */
-		if (image.getColorModel().equals(gfx_config.getColorModel()))
-			return image;
-
-		// image is not optimized, so create a new image that is
-		BufferedImage new_image = gfx_config.createCompatibleImage(
-				image.getWidth(), image.getHeight(), image.getTransparency());
-
-		// get the graphics context of the new image to draw the old image on
-		Graphics2D g2d = (Graphics2D) new_image.getGraphics();
-
-		// actually draw the image and dispose of context no longer needed
-		g2d.drawImage(image, 0, 0, null);
-		g2d.dispose();
-
-		// return the new optimized image
-		return new_image; 
-	}
 
 	@Override
 	public void paint(Graphics g) {
@@ -105,11 +75,12 @@ public final class Engine extends JFrame {
 		// TODO Only perform on scale change.
 		Camera.getSingleton()
 				.setScreenCenter(new Point2D(VideoSettings.getOutputWidth() / 2, VideoSettings.getOutputHeight() / 2));
-		//Consider different ways to remove the actual drawing from this area, and only draw the image here.
+		// Consider different ways to remove the actual drawing from this area,
+		// and only draw the image here.
 		Triangle[] triangles = new Triangle[0];
 		try {
 			triangles = RenderManager.getTriangles();
-		}catch (java.lang.NoClassDefFoundError e) {
+		} catch (java.lang.NoClassDefFoundError e) {
 			System.exit(1);
 		}
 		graphics.setColor(Color.BLACK);
@@ -150,5 +121,32 @@ public final class Engine extends JFrame {
 			}
 		}
 		fps = 1000000000.0 / (System.nanoTime() - lastTime);
+	}
+
+	private BufferedImage toCompatibleImage(BufferedImage image) {
+		// obtain the current system graphical settings
+		GraphicsConfiguration gfx_config = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+				.getDefaultConfiguration();
+
+		/*
+		 * if image is already compatible and optimized for current system
+		 * settings, simply return it
+		 */
+		if (image.getColorModel().equals(gfx_config.getColorModel()))
+			return image;
+
+		// image is not optimized, so create a new image that is
+		BufferedImage new_image = gfx_config.createCompatibleImage(image.getWidth(), image.getHeight(),
+				image.getTransparency());
+
+		// get the graphics context of the new image to draw the old image on
+		Graphics2D g2d = (Graphics2D) new_image.getGraphics();
+
+		// actually draw the image and dispose of context no longer needed
+		g2d.drawImage(image, 0, 0, null);
+		g2d.dispose();
+
+		// return the new optimized image
+		return new_image;
 	}
 }

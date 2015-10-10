@@ -15,7 +15,7 @@ public final class Outline extends Polygon {
 	public int[] getXValues() {
 		int[] x = new int[points.length];
 		for (int i = 0; i < points.length; i++) {
-			x[i] = (int) points[i].getX();
+			x[i] = points[i].getX();
 		}
 		return x;
 	}
@@ -23,7 +23,7 @@ public final class Outline extends Polygon {
 	public int[] getYValues() {
 		int[] y = new int[points.length];
 		for (int i = 0; i < points.length; i++) {
-			y[i] = (int) points[i].getY();
+			y[i] = points[i].getY();
 		}
 		return y;
 	}
