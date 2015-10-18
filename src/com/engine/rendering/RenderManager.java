@@ -1,19 +1,3 @@
-/*
- * Notes 10/2/2015:
- * 	It appears that the only thing really affecting the time of this method is the amount of faces being rendered.
- * 
- * Ideas:
- * 
- * To solve the issue with outlines, consider only creating outlines for objects roughly within range of mouse
- * 
- * To solve lighting, consider moving it somewhere else, such as directly affecting faces before they even get here.
- * Or even have a separate lighting thread specifically for the purpose of lighting calculations. 
- * 
- * Remember: It's often more efficient to check if you should do something before doing something to everything.
- * 
- * 
- */
-
 package com.engine.rendering;
 
 import java.awt.Color;
@@ -133,7 +117,6 @@ public final class RenderManager extends Thread {
 				Environment.getObjectForID(lastOutlineIDs[i]).setOutline(null);
 			} catch (NullPointerException e) {
 			}
-			;
 		}
 		lastOutlineIDs = new int[outlineBuffers.size()];
 		for (int i = 0; i < outlineBuffers.size(); i++) {

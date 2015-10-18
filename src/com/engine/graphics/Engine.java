@@ -75,14 +75,7 @@ public final class Engine extends JFrame {
 		// TODO Only perform on scale change.
 		Camera.getSingleton()
 				.setScreenCenter(new Point2D(VideoSettings.getOutputWidth() / 2, VideoSettings.getOutputHeight() / 2));
-		// Consider different ways to remove the actual drawing from this area,
-		// and only draw the image here.
-		Triangle[] triangles = new Triangle[0];
-		try {
-			triangles = RenderManager.getTriangles();
-		} catch (java.lang.NoClassDefFoundError e) {
-			System.exit(1);
-		}
+		Triangle[] triangles = RenderManager.getTriangles();
 		graphics.setColor(Color.BLACK);
 		graphics.fillRect(0, 0, VideoSettings.getOutputWidth(), VideoSettings.getOutputHeight());
 		for (Triangle t : triangles) {
@@ -90,16 +83,11 @@ public final class Engine extends JFrame {
 			graphics.fillPolygon(t.getXValues(), t.getYValues(), t.getPoints().length);
 		}
 		graphics.setColor(Color.ORANGE);
-		try {
-			for (EnvironmentObject e : Environment.getObjectsAtCoordinate((int) MouseHandler.getMouseX(),
-					(int) MouseHandler.getMouseY())) {
-				if (e.getOutline() != null)
-					graphics.drawPolygon(e.getOutline().getXValues(), e.getOutline().getYValues(),
-							e.getOutline().getPoints().length);
-			}
-		} catch (java.lang.NoClassDefFoundError e) {
-			e.printStackTrace();
-			System.exit(1);
+		for (EnvironmentObject e : Environment.getObjectsAtCoordinate((int) MouseHandler.getMouseX(),
+				(int) MouseHandler.getMouseY())) {
+			if (e.getOutline() != null)
+				graphics.drawPolygon(e.getOutline().getXValues(), e.getOutline().getYValues(),
+						e.getOutline().getPoints().length);
 		}
 		for (LightSource l : Environment.grabEnvironmentLights()) {
 			Point2D p = Camera.getSingleton().translatePoint3D(l.getCoordinates());
